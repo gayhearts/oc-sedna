@@ -20,6 +20,8 @@ public class SednaVM {
    OpenComputersGPU gpu = new OpenComputersGPU();
    
    Object[] run(Object[] args) {
+      // Text string when needed.
+      //gpu.WriteString( "What's the plan, Stan? " );
       return new Object[10];
    }
    
@@ -36,6 +38,7 @@ public class SednaVM {
 	    this.gpu.address = key;
 	    break;
 	  case "screen":
+	    this.gpu.screen_address = key;
 	    this.screen_address = key;
 	    break;
 	  case "eeprom":
@@ -59,9 +62,7 @@ public class SednaVM {
 	    
 	    
 	    gpu.initialize(machine);
-	    gpu.clear(machine);
-	    
-	    gpu.WriteString(machine, "What's the plan, Stan? ");
+	    gpu.WriteString( "What's the plan, Stan?" );
 	 } catch (Throwable t) {
 	    System.out.printf( "%s\n", t.toString() );
 	 }

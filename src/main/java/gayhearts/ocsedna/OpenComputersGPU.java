@@ -40,6 +40,9 @@ public class OpenComputersGPU {
 	 this.height = 16;
       }
       
+      // Initialize the text buffer.
+      this.clear(machine);
+      
       return;
    }
    
@@ -50,4 +53,27 @@ public class OpenComputersGPU {
 	 System.out.printf( "%s\n", t.toString() );
       }
    }
+
+   public void WriteChar (Machine machine, char character) {
+     try {
+	 machine.invoke(this.address, "set", new Object[]{this.cursor.x, this.cursor.y, String.valueOf(character)});
+      } catch (Throwable t) {
+	 System.out.printf( "%s\n", t.toString() );
+      }
+      
+      if( this.cursor.x == this.width ) {
+	 this.cursor.y = ((this.cursor.y % this.height) + 1);
+      }
+       
+      // handle cursor movement, wraps.
+      this.cursor.x = ((this.cursor.x % this.width) + 1);
+   
+      return;
+   }
+   
+   public void WriteString (Machine machine, String message) {
+      for( int I = 0; I < message.length(); I++ ) {
+	 WriteChar(machine, message.charAt(I));
+      }	   
+   }	
 }

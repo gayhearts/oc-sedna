@@ -61,7 +61,7 @@ public class SednaVM {
 	    gpu.initialize(machine);
 	    gpu.clear(machine);
 	    
-	    machine.invoke(gpu.address, "set", new Object[]{1, gpu.height, "What's the plan, Stan?"});
+	    gpu.WriteString(machine, "What's the plan, Stan? ");
 	 } catch (Throwable t) {
 	    System.out.printf( "%s\n", t.toString() );
 	 }

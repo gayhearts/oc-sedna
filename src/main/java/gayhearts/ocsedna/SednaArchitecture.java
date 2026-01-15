@@ -41,6 +41,9 @@ public class SednaArchitecture implements Architecture {
 		// provide to it.
 		vm = new SednaVM();
 		vm.machine = machine;
+
+		vm.initialize();
+
 		// ... more callbacks.
 		return true;
 	}

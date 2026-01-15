@@ -19,7 +19,11 @@ public class SednaVM {
    
    OpenComputersGPU gpu = new OpenComputersGPU();
    
-   Object[] run(Object[] args) {	
+   Object[] run(Object[] args) {
+      return new Object[10];
+   }
+   
+   void initialize () {
    Map<String, String> m = this.machine.components();
       for(String key: m.keySet()) {
 	 String value = m.get(key);
@@ -65,6 +69,6 @@ public class SednaVM {
 	 System.out.printf( "gpu.address is null.\n" );
       }
       
-      return new Object[10];
+      return;
    }
 }

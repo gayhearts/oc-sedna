@@ -4,12 +4,16 @@ import gayhearts.ocsedna.SednaVM;
 import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.internal.TextBuffer;
+import li.cil.oc.api.machine.Signal;
 
 import java.lang.StringBuilder;
 
 public class OpenComputersGPU {
+   Machine machine;
+   
    String address = null;
    String screen_address = null;
+   String keyboard_address = null;
    
    boolean initialized = false;
    
@@ -26,6 +30,12 @@ public class OpenComputersGPU {
    CursorClass cursor = new CursorClass();
    
    public void initialize( Machine machine ) {
+      try {
+	 this.machine = machine;
+      } catch (Throwable thrown) {
+	 System.out.printf( "%s\n", thrown.toString() );
+      }
+      
       Object[] gpu_size;
       
       try {
@@ -101,8 +111,9 @@ public class OpenComputersGPU {
    public void WriteChar (char character) {
       if( this.initialized == true ) {
 	 if( character == '\n' ){
-		 this.cursor.x = this.width;
-
+		 this.cursor.x = (this.width - 1);
+	 } else if( character == '\r' ){
+		 this.cursor.x = 0;
 		 return;
 	 } else {
 	    try {
@@ -134,4 +145,23 @@ public class OpenComputersGPU {
 	 this.WriteChar(message.charAt(I));
       }	   
    }	
+
+   public int GetInput() {
+      if( this.keyboard_address != null ) {
+	 try {
+	    Signal signal = this.machine.popSignal();
+	 
+	    if( signal != null ){
+	       String signal_name = signal.name();
+	       if( signal_name == "key_down" ) {
+		  return (int)signal.args()[2];
+	       }
+	    }
+	 } catch (Throwable thrown) {
+	    System.out.printf("GetInput: %s\n", thrown.toString());
+	 }
+      }	 
+      
+      return 0;
+   }
 }

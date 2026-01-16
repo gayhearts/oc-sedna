@@ -16,15 +16,16 @@ public class SednaVM {
    String computer_address = null;
    String screen_address = null;
    String eeprom_address = null;
-   
+   String keyboard_address = null;
+
    OpenComputersGPU gpu = new OpenComputersGPU();
    SednaVMRunner sedna_vm = new SednaVMRunner();
 
    Object[] run(Object[] args) {
       // Text string when needed.
       	//gpu.WriteString( "What's the plan, Stan? " );
-	sedna_vm.SednaVMStep();
-	return new Object[10];
+		sedna_vm.SednaVMStep();
+		return new Object[10];
    }
    
    void initialize () {
@@ -46,6 +47,10 @@ public class SednaVM {
 	  case "eeprom":
 	    this.eeprom_address = key;
 	    break;
+	  case "keyboard":
+	    this.gpu.keyboard_address = key;
+	    System.out.printf("%s\n", key);
+	    break;
 	 }
       }
 
@@ -66,7 +71,6 @@ public class SednaVM {
 	    gpu.initialize(machine);
 	    this.sedna_vm.gpu = this.gpu;
 	    this.sedna_vm.SednaVMRunner();
-	    //gpu.WriteString( "What's the plan, Stan?" );
 	 } catch (Throwable t) {
 	    System.out.printf( "%s\n", t.toString() );
 	 }

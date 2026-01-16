@@ -49,39 +49,51 @@ public class SednaVMRunner {
 
 			remaining = cyclesPerSecond;
 			while (remaining > 0) {
-			board.step(cyclesPerStep);
-			remaining -= cyclesPerStep;
+				board.step(cyclesPerStep);
+				remaining -= cyclesPerStep;
 
-			int value;
-			while ((value = uart.read()) != -1) {
-				this.gpu.WriteChar((char) value);
-				System.out.print((char) value);
-			}
-
-			//while (br.ready() && builtinDevices.uart.canPutByte()) {
-			//	builtinDevices.uart.putByte((byte) br.read());
-			//}
-			
-
-			if (board.isRestarting()) {
-				try {
-					loadProgramFile(memory, images.firmware());
-					loadProgramFile(memory, images.kernel(), 0x200000);
-				
-					board.initialize();
-				} catch (Throwable t) {
-					this.gpu.WriteString("%s\n" + t.toString());
+				int value;
+				while ((value = uart.read()) != -1) {
+					this.gpu.WriteChar((char) value);
+					System.out.print((char) value);
 				}
-			}
+
+				int user_input = gpu.GetInput();
+				if( user_input != '\0' ){
+					System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
+
+					switch (user_input) {
+					case 256+'\n':
+						uart.putByte((byte)'\r');
+						uart.putByte((byte)'\n');
+						break;
+					default:
+						uart.putByte((byte)KeyCodes.lwjgl_keys[user_input]);
+					}
+				}
+
+
+				//while (br.ready() && builtinDevices.uart.canPutByte()) {
+				//	builtinDevices.uart.putByte((byte) br.read());
+				//}
+
+
+				if (board.isRestarting()) {
+					try {
+						loadProgramFile(memory, images.firmware());
+						loadProgramFile(memory, images.kernel(), 0x200000);
+
+						board.initialize();
+					} catch (Throwable t) {
+						this.gpu.WriteString("%s\n" + t.toString());
+					}
+				}
 			}
 		}
 
 	}
 
 	public void SednaVMRunner() throws Exception {
-				//final GlobalVMContext context = new GlobalVMContext(board);
-		//final BuiltinDevices builtinDevices;
-
 		this.gpu.WriteString("starting VM\n");
 		Sedna.initialize();
 

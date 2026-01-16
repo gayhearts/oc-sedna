@@ -100,6 +100,13 @@ public class OpenComputersGPU {
 
    public void WriteChar (char character) {
       if( this.initialized == true ) {
+	 if( character == '\n' ){
+		 this.cursor.y = ((this.cursor.y + 1) % this.height);
+		 this.cursor.x = 0;
+
+		 return;
+	 }
+
 	 try {
 	    this.text_buffer_swap[this.cursor.y][this.cursor.x] = character;
 	    this.text_buffer.set(this.cursor.x, this.cursor.y, String.valueOf(character), false);

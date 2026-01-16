@@ -83,6 +83,7 @@ public class SednaVMRunner {
 		//final BuiltinDevices builtinDevices;
 
 		this.gpu.WriteString("starting VM\n");
+		Sedna.initialize();
 
 		// Get Minux images.
 		images = getImages();

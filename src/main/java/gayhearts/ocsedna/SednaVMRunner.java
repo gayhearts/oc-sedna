@@ -33,21 +33,62 @@ public class SednaVMRunner {
 
 	public OpenComputersGPU gpu;
 
-	public void SednaVMRunner() throws Exception {
-		final R5Board board = new R5Board();
-		final PhysicalMemory memory = Memory.create(VM_MEMORY_BYTES);
-		final GoldfishRTC rtc = new GoldfishRTC(SystemTimeRealTimeCounter.get());
-		final UART16550A uart = new UART16550A();
+	public R5Board board = new R5Board();
+	public PhysicalMemory memory = Memory.create(VM_MEMORY_BYTES);
+	public GoldfishRTC rtc = new GoldfishRTC(SystemTimeRealTimeCounter.get());
+	public UART16550A uart = new UART16550A();
 
-		//final GlobalVMContext context = new GlobalVMContext(board);
+	public Images images;
+
+
+	public void SednaVMStep() {
+		int remaining = 0;
+		if( board.isRunning() ) {
+			final int cyclesPerSecond = board.getCpu().getFrequency();
+			final int cyclesPerStep = 1_000;
+
+			remaining = cyclesPerSecond;
+			while (remaining > 0) {
+			board.step(cyclesPerStep);
+			remaining -= cyclesPerStep;
+
+			int value;
+			while ((value = uart.read()) != -1) {
+				this.gpu.WriteChar((char) value);
+				System.out.print((char) value);
+			}
+
+			//while (br.ready() && builtinDevices.uart.canPutByte()) {
+			//	builtinDevices.uart.putByte((byte) br.read());
+			//}
+			
+
+			if (board.isRestarting()) {
+				try {
+					loadProgramFile(memory, images.firmware());
+					loadProgramFile(memory, images.kernel(), 0x200000);
+				
+					board.initialize();
+				} catch (Throwable t) {
+					this.gpu.WriteString("%s\n" + t.toString());
+				}
+			}
+			}
+		}
+
+	}
+
+	public void SednaVMRunner() throws Exception {
+				//final GlobalVMContext context = new GlobalVMContext(board);
 		//final BuiltinDevices builtinDevices;
 
-		System.out.printf("starting VM\n");
+		this.gpu.WriteString("starting VM\n");
 
-		// grab minux images
-		final Images images = getImages();
+		// Get Minux images.
+		images = getImages();
+		this.gpu.WriteString("images gotten\n");
 
-		System.out.printf("images gotten\n");
+
 
 		// mount bootfs for first block device (vda)
 		//   can we add this to context?
@@ -60,7 +101,7 @@ public class SednaVMRunner {
 		final VirtIOBlockDevice vdb = new VirtIOBlockDevice(board.getMemoryMap(), rootfs);
 		board.addDevice(vdb);
 
-		System.out.printf("drives added\n");
+		this.gpu.WriteString("drives added\n");
 
 		uart.getInterrupt().set(0xA, board.getInterruptController());
 		rtc.getInterrupt().set(0xB, board.getInterruptController());
@@ -75,71 +116,22 @@ public class SednaVMRunner {
 
 		board.reset();
 
-		System.out.printf("loading firmware\n");
+		this.gpu.WriteString("loading firmware\n");
 		// Add device firmware.
 		loadProgramFile(memory, images.firmware());
 		loadProgramFile(memory, images.kernel(), 0x200000);
-		System.out.printf("Firmware loaded!\n");
+		this.gpu.WriteString("Firmware loaded!\n");
 
 		try {
 			board.initialize();
 		} catch (Throwable t) {
-			System.out.printf(t.toString() + '\n');
+			this.gpu.WriteString(t.toString() + '\n');
 			return;
 		}
 
-		System.out.printf("board initialized\n");
-
-		// Mount adapter devices.
-		//vmAdapter.mountDevices();
-		//rpcAdapter.mountDevices();
+		this.gpu.WriteString("board initialized\n");
 
 		board.setRunning(true);
-
-		final int cyclesPerSecond = board.getCpu().getFrequency();
-		final int cyclesPerStep = 1_000;
-
-		System.out.printf(" entering loop ");
-		int remaining = 0;
-		while (board.isRunning()) {
-			final long stepStart = System.currentTimeMillis();
-
-			remaining += cyclesPerSecond;
-			while (remaining > 0) {
-				board.step(cyclesPerStep);
-				//rpcAdapter.step(cyclesPerStep);
-				remaining -= cyclesPerStep;
-
-				int value;
-				while ((value = uart.read()) != -1) {
-					this.gpu.WriteChar((char) value);
-					//System.out.print((char) value);
-				}
-
-				//while (br.ready() && builtinDevices.uart.canPutByte()) {
-				//	builtinDevices.uart.putByte((byte) br.read());
-				//}
-			}
-
-			if (board.isRestarting()) {
-				loadProgramFile(memory, images.firmware());
-				loadProgramFile(memory, images.kernel(), 0x200000);
-
-				board.initialize();
-			}
-
-			final long stepDuration = System.currentTimeMillis() - stepStart;
-			// minimum ~1/60th second per loop
-			final long sleep = 17 - stepDuration;
-			if (sleep > 0) {
-				//noinspection BusyWait
-				Thread.sleep(sleep);
-			}
-		}
-
-		// UnMount adapter devices.
-		//vmAdapter.unmountDevices();
-		//rpcAdapter.unmountDevices();
 	}
 
 

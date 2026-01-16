@@ -22,8 +22,9 @@ public class SednaVM {
 
    Object[] run(Object[] args) {
       // Text string when needed.
-      //gpu.WriteString( "What's the plan, Stan? " );
-      return new Object[10];
+      	//gpu.WriteString( "What's the plan, Stan? " );
+	sedna_vm.SednaVMStep();
+	return new Object[10];
    }
    
    void initialize () {

@@ -101,18 +101,18 @@ public class OpenComputersGPU {
    public void WriteChar (char character) {
       if( this.initialized == true ) {
 	 if( character == '\n' ){
-		 this.cursor.y = ((this.cursor.y + 1) % this.height);
-		 this.cursor.x = 0;
+		 this.cursor.x = this.width;
 
 		 return;
+	 } else {
+	    try {
+	       this.text_buffer_swap[this.cursor.y][this.cursor.x] = character;
+	       this.text_buffer.set(this.cursor.x, this.cursor.y, String.valueOf(character), false);
+	    } catch (Throwable t) {
+	       System.out.printf( "WriteChar failed: %s\n", t.toString() );
+	    }
 	 }
-
-	 try {
-	    this.text_buffer_swap[this.cursor.y][this.cursor.x] = character;
-	    this.text_buffer.set(this.cursor.x, this.cursor.y, String.valueOf(character), false);
-	 } catch (Throwable t) {
-	    System.out.printf( "WriteChar failed: %s\n", t.toString() );
-	 }
+	 
       
 	 if( this.cursor.y >= (this.height - 1) && this.cursor.x >= (this.width - 1) ) {
 	    this.Scroll(1);

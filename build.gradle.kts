@@ -39,7 +39,6 @@ repositories {
 		implementation("li.cil.ceres:ceres:0.0.4")
 		implementation("li.cil.sedna:sedna:2.0.13")
 		implementation("li.cil.sedna:sedna-buildroot:0.0.64")
-		implementation("curse.maven:oc2r-1037738:6280699")
 	}
 
 	minecraft {
@@ -59,4 +58,5 @@ repositories {
 
 		// Exclude some Maven dependency groups from being automatically included in the reobfuscated runs
 		//groupsToExcludeFromAutoReobfMapping.addAll("", "")
+
 	}

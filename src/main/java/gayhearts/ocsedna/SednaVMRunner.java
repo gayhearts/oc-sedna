@@ -100,6 +100,7 @@ public class SednaVMRunner {
 
 		final BlockDevice rootfs = ByteBufferBlockDevice.createFromStream(images.rootfs(), false);
 		final VirtIOBlockDevice vdb = new VirtIOBlockDevice(board.getMemoryMap(), rootfs);
+		vdb.getInterrupt().set(0x2, board.getInterruptController());
 		board.addDevice(vdb);
 
 		this.gpu.WriteString("drives added\n");

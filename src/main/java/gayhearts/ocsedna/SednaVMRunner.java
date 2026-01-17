@@ -60,7 +60,7 @@ public class SednaVMRunner {
 
 				int user_input = gpu.GetInput();
 				if( user_input != '\0' ){
-					System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
+					//System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
 
 					switch (user_input) {
 					case 256+'\n':

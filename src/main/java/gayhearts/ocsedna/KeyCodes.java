@@ -4,9 +4,9 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public class KeyCodes {
-	public static int[] lwjgl_keys = {
+	public static char[] lwjgl_keys = {
 		'\0',
-		27, // ESC
+		0x1B, // ESC
 		'1',
 		'2',
 		'3',

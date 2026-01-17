@@ -4,7 +4,8 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public class KeyCodes {
-	public static char[] lwjgl_keys = {
+	public final static char   special_offset = 256;
+	public final static char[] lwjgl_keys = {
 		'\0',
 		0x1B, // ESC
 		'1',
@@ -36,7 +37,7 @@ public class KeyCodes {
 		
 		'[',
 		']',
-		256+'\n', //KEY_RETURN
+		special_offset+28, //KEY_RETURN
 		'\0', //KEY_LCONTROL, handle seperately?
 		
 		'a',
@@ -217,15 +218,15 @@ public class KeyCodes {
 		'\0', //unix_keys.KEY_PAUSE,
 		'\0',
 		'\0', //unix_keys.KEY_HOME,
-		'\0', //unix_keys.KEY_UP,
+		special_offset+200, //unix_keys.KEY_UP,
 		'\0', //unix_keys.KEY_PRIOR,
 		'\0',
-		'\0', //unix_keys.KEY_LEFT,
+		special_offset+203, //unix_keys.KEY_LEFT,
 		'\0',
-		'\0', //unix_keys.KEY_RIGHT,
+		special_offset+205, //unix_keys.KEY_RIGHT,
 		'\0',
 		'\0', //unix_keys.KEY_END,
-		'\0', //unix_keys.KEY_DOWN,
+		special_offset+208, //unix_keys.KEY_DOWN,
 		'\0', //unix_keys.KEY_NEXT,
 		'\0', //unix_keys.KEY_INSERT,
 		'\0', //unix_keys.KEY_DELETE,

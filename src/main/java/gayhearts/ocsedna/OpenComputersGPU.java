@@ -90,7 +90,7 @@ public class OpenComputersGPU {
 			}
 		}
 
-		this.text_buffer.fill(0, 0, this.width, this.height, ' ');
+		this.text_buffer.fill(0, 0, this.width, this.height, 32);
 
 		try { 
 			this.text_buffer.rawSetText(0, 0, this.text_buffer_swap);

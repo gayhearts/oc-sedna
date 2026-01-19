@@ -20,6 +20,7 @@ var minux_repo = extra["minux_repo"]
 plugins {
 	id("org.gradlex.reproducible-builds") version "1.1"
 	id("com.gtnewhorizons.retrofuturagradle") version "1.4.0"
+	id("com.gradleup.shadow") version "8.3.5"
 	kotlin("jvm") version "2.3.0"
 }
 
@@ -79,3 +80,23 @@ repositories {
 		//groupsToExcludeFromAutoReobfMapping.addAll("", "")
 
 	}
+
+tasks.shadowJar {
+	mergeServiceFiles()
+    dependencies {
+        include(dependency("li.cil.ceres:ceres:${ceres_version}"))
+        include(dependency("li.cil.sedna:sedna:${sedna_version}"))
+        include(dependency("li.cil.sedna:sedna-buildroot:${minux_version}"))
+    }
+
+    archiveClassifier.set("")
+}
+
+tasks.build {
+	dependsOn(tasks.shadowJar)
+
+}
+
+tasks.compileJava {
+	options.compilerArgs.addAll(listOf("-Xlint:all", "-Werror"))
+}

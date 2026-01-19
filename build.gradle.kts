@@ -1,3 +1,22 @@
+// Minecraft info.
+var minecraft_version = extra["minecraft_version"]
+var minecraft_sdk     = extra["minecraft_sdk"]
+
+// Dependency version info.
+var opencomputers_version = extra["opencomputers_version"]
+
+var ceres_version         = extra["ceres_version"]
+
+var sedna_version         = extra["sedna_version"]
+var sedna_commit_ref      = extra["sedna_commit_ref"]
+
+var minux_version         = extra["minux_version"]
+
+// Repositories for dependencies.
+var ceres_repo = extra["ceres_repo"]
+var sedna_repo = extra["sedna_repo"]
+var minux_repo = extra["minux_repo"]
+
 plugins {
 	id("org.gradlex.reproducible-builds") version "1.1"
 	id("com.gtnewhorizons.retrofuturagradle") version "1.4.0"
@@ -22,7 +41,7 @@ repositories {
 	}
 
 	mavenCentral()
-	listOf("North-Western-Development/sedna", "North-Western-Development/minux", "fnuecke/ceres").forEach{repo ->
+	listOf("${sedna_repo}", "${minux_repo}", "${ceres_repo}").forEach{repo ->
 		maven {
 			url = uri("https://maven.pkg.github.com/${repo}")
 			credentials {
@@ -33,16 +52,16 @@ repositories {
 	}
 
 	dependencies {
-		implementation("com.github.GTNewHorizons:OpenComputers:1.12.8-GTNH:api")
-		implementation("com.github.GTNewHorizons:OpenComputers:1.12.8-GTNH:dev")
+		implementation("com.github.GTNewHorizons:OpenComputers:${opencomputers_version}:api")
+		implementation("com.github.GTNewHorizons:OpenComputers:${opencomputers_version}:dev")
 
-		implementation("li.cil.ceres:ceres:0.0.4")
-		implementation("li.cil.sedna:sedna:2.0.13")
-		implementation("li.cil.sedna:sedna-buildroot:0.0.64")
+		implementation("li.cil.ceres:ceres:${ceres_version}")
+		implementation("li.cil.sedna:sedna:${sedna_version}")
+		implementation("li.cil.sedna:sedna-buildroot:${minux_version}")
 	}
 
 	minecraft {
-		mcVersion.set("1.7.10")
+		mcVersion.set("${minecraft_version}")
 
 		// Generate a field named VERSION with the mod version in the injected Tags class
 		injectedTags.put("VERSION", project.version)

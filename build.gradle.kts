@@ -21,14 +21,9 @@ plugins {
 	id("org.gradlex.reproducible-builds") version "1.1"
 	id("com.gtnewhorizons.retrofuturagradle") version "1.4.0"
 	id("com.gradleup.shadow") version "8.3.5"
-	kotlin("jvm") version "2.3.0"
 }
 
 group = "gayhearts"
-
-kotlin {
-	jvmToolchain(17)
-}
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 

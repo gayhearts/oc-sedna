@@ -19,13 +19,13 @@ var minux_repo = extra["minux_repo"]
 
 plugins {
 	id("org.gradlex.reproducible-builds") version "1.1"
-	id("com.gtnewhorizons.retrofuturagradle") version "1.4.0"
+	id("com.gtnewhorizons.retrofuturagradle") version "2.0.2"
 	id("com.gradleup.shadow") version "8.3.5"
 }
 
 group = "gayhearts"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 repositories {
 	maven("https://maven.minecraftforge.net/")

@@ -2,7 +2,7 @@
 {
     "modid": "${modId}",
         "name":         "${modName}",
-        "description":  "Sedna, but for OpenComputers :p",
+        "description":  "A backport of Sedna from OC2 to OpenComputers",
         "version":      "${modVersion}",
         "mcversion":    "${minecraftVersion}",
         "url":          "",

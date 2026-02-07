@@ -88,11 +88,11 @@ minecraft_fp {
 
 	tokens {
 		tokenClass = "Tags"
-		//        tokenClassIgnoreRootPkg = false         //Convention
-		//        modid                   = "MOD_ID"      //Convention
-		//        name                    = "MOD_NAME"    //Convention
+		tokenClassIgnoreRootPkg = false         //Convention
+		modid                   = "MOD_ID"      //Convention
+		name                    = "MOD_NAME"    //Convention
 		version                 = "MOD_VERSION" //Convention
-		//        rootPkg                 = "ROOT_PKG"    //Convention
+		rootPkg                 = "ROOT_PKG"    //Convention
 	}
 
 	// Use this if you want to publish on maven/curse/modrinth

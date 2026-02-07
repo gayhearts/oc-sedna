@@ -1,0 +1,15 @@
+[
+{
+  "modid": "ocsedna",
+  "name": "OpenComputersSedna",
+  "description": "Sedna, but for OpenComputers :p",
+  "version": "0.0.1",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["gayhearts"],
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

@@ -17,9 +17,6 @@ import li.cil.sedna.fs.HostFileSystem;
 import li.cil.sedna.riscv.R5Board;
 import li.cil.sedna.riscv.R5CPU;
 
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
-
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;

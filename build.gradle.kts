@@ -42,49 +42,50 @@ repositories {
 			url = uri("https://maven.pkg.github.com/${repo}")
 			credentials {
 				username = project.findProperty("gpr.user") as String? ?: System.getenv("GPR_USER")
-				password = project.findProperty("gpr.key") as String? ?: System.getenv("GPR_KEY")			}
+				password = project.findProperty("gpr.key") as String? ?: System.getenv("GPR_KEY")
 			}
 		}
 	}
+}
 
-	dependencies {
-		implementation("com.github.GTNewHorizons:OpenComputers:${opencomputers_version}:api")
-		implementation("com.github.GTNewHorizons:OpenComputers:${opencomputers_version}:dev")
+dependencies {
+	implementation("com.github.GTNewHorizons:OpenComputers:${opencomputers_version}:api")
+	implementation("com.github.GTNewHorizons:OpenComputers:${opencomputers_version}:dev")
 
-		implementation("li.cil.ceres:ceres:${ceres_version}")
-		implementation("li.cil.sedna:sedna:${sedna_version}")
-		implementation("li.cil.sedna:sedna-buildroot:${minux_version}")
-	}
+	implementation("li.cil.ceres:ceres:${ceres_version}")
+	implementation("li.cil.sedna:sedna:${sedna_version}")
+	implementation("li.cil.sedna:sedna-buildroot:${minux_version}")
+}
 
-	minecraft {
-		mcVersion.set("${minecraft_version}")
+minecraft {
+	mcVersion.set("${minecraft_version}")
 
-		// Generate a field named VERSION with the mod version in the injected Tags class
-		injectedTags.put("VERSION", project.version)
+	// Generate a field named VERSION with the mod version in the injected Tags class
+	injectedTags.put("VERSION", project.version)
 
-		// If you need the old replaceIn mechanism, prefer the injectTags task because it doesn't inject a javac plugin.
-		// tagReplacementFiles.add("RfgExampleMod.java")
+	// If you need the old replaceIn mechanism, prefer the injectTags task because it doesn't inject a javac plugin.
+	// tagReplacementFiles.add("RfgExampleMod.java")
 
-		// Enable assertions in the mod's package when running the client or server
-		extraRunJvmArguments.add("-ea:${project.group}")
+	// Enable assertions in the mod's package when running the client or server
+	extraRunJvmArguments.add("-ea:${project.group}")
 
-		// If needed, add extra tweaker classes like for mixins.
-		//extraTweakClasses.add("org.spongepowered.asm.launch.MixinTweaker")
+	// If needed, add extra tweaker classes like for mixins.
+	//extraTweakClasses.add("org.spongepowered.asm.launch.MixinTweaker")
 
-		// Exclude some Maven dependency groups from being automatically included in the reobfuscated runs
-		//groupsToExcludeFromAutoReobfMapping.addAll("", "")
+	// Exclude some Maven dependency groups from being automatically included in the reobfuscated runs
+	//groupsToExcludeFromAutoReobfMapping.addAll("", "")
 
-	}
+}
 
 tasks.shadowJar {
 	mergeServiceFiles()
-    dependencies {
-        include(dependency("li.cil.ceres:ceres:${ceres_version}"))
-        include(dependency("li.cil.sedna:sedna:${sedna_version}"))
-        include(dependency("li.cil.sedna:sedna-buildroot:${minux_version}"))
-    }
+	dependencies {
+		include(dependency("li.cil.ceres:ceres:${ceres_version}"))
+		include(dependency("li.cil.sedna:sedna:${sedna_version}"))
+		include(dependency("li.cil.sedna:sedna-buildroot:${minux_version}"))
+	}
 
-    archiveClassifier.set("")
+	archiveClassifier.set("")
 }
 
 tasks.build {

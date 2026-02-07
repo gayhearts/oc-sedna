@@ -109,6 +109,14 @@ minecraft_fp {
 	}
 }
 
+tasks.shadowJar {
+	mergeServiceFiles()
+	dependencies {
+		include(dependency("li.cil.ceres:ceres:${ceres_version}"))
+		include(dependency("li.cil.sedna:sedna:${sedna_version}"))
+		include(dependency("li.cil.sedna:sedna-buildroot:${minux_version}"))
+	}
+}
 
 tasks.withType<AbstractArchiveTask>().configureEach {
 	isPreserveFileTimestamps = false

@@ -1,5 +1,7 @@
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
+import java.io.File
+import java.util.regex.Pattern 
 
 // Minecraft info.
 var minecraft_version = extra["minecraft_version"]
@@ -19,6 +21,9 @@ var minux_version         = extra["minux_version"]
 var ceres_repo = extra["ceres_repo"]
 var sedna_repo = extra["sedna_repo"]
 var minux_repo = extra["minux_repo"]
+
+// List of output files obtained during reobfJar.
+var output_list: MutableList<String> = mutableListOf<String>()
 
 plugins {
 	id("org.gradlex.reproducible-builds") version "1.1"
@@ -107,6 +112,38 @@ minecraft_fp {
 	updates {
 		check = false // Convention: true
 	}
+}
+
+tasks.reobfJar {
+    // Store paths of any files we get during reobfuscation.
+    getOutputs().getFiles().forEach { file: File ->
+        output_list.add(file.toString())
+    }
+}
+
+tasks.register<Jar>("finalJar") {
+    dependsOn("reobfJar")
+    archiveClassifier = "repack"
+    
+    from({
+        // Extract and utilize files from jar paths stored during reobfJar.
+        output_list.map { zipTree(it) }
+    })
+
+    doLast {
+        getOutputs().getFiles().forEach {file: File ->
+            // Regex to remove archive classifier from filename.
+            val regex_pattern = Pattern.compile("(.+)-repack(.+)")
+            val output_file = regex_pattern.matcher(file.toString()).replaceAll("$1$2")
+        
+            // Move file to the regex result.
+            file.renameTo(file(output_file))
+        }
+    }
+}
+
+tasks.build {
+    dependsOn("finalJar")
 }
 
 tasks.shadowJar {

@@ -24,6 +24,7 @@ gradle: fw_bin_relocate
 clean:
 	rm "$(firmware_outdir)/fw_dynamic.bin" \
 		"$(firmware_outdir)/fw_jump.bin" \
+		"$(firmware_outdir)/fw_payload.bin" \
 		"$(tarball)"
 
 # Pipeline to download and check sha512sums of files.
@@ -40,5 +41,6 @@ $(firmwares): fw_tar_checksum
 	echo "$($@.hash) $(firmware_srcdir)/$@.bin" | sha512sum -c
 
 fw_bin_relocate: $(firmwares)
+	mkdir -p "$(firmware_outdir)"
 	mv "$(firmware_srcdir)"/*.bin "$(firmware_outdir)"
 	rm -r "opensbi-$(OPENSBI_VERSION)-rv-bin/"

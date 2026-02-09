@@ -1,7 +1,16 @@
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
 import java.io.File
-import java.util.regex.Pattern 
+import java.util.regex.Pattern
+
+// For downloading and checksumming files.
+import java.net.URL
+import java.net.URI
+import java.nio.channels.Channels
+import java.nio.channels.ReadableByteChannel
+import java.io.FileOutputStream
+import java.security.MessageDigest
+import java.math.BigInteger
 
 // Minecraft info.
 var minecraft_version = extra["minecraft_version"]
@@ -22,6 +31,13 @@ var ceres_repo = extra["ceres_repo"]
 var sedna_repo = extra["sedna_repo"]
 var minux_repo = extra["minux_repo"]
 
+var opensbi_repo    = extra["opensbi_repo"]
+var opensbi_hash    = extra["opensbi_hash"]
+var opensbi_version = extra["opensbi_version"]
+
+var fw_jump_hash:    String by extra
+var fw_dynamic_hash: String by extra
+
 // List of output files obtained during reobfJar.
 var output_list: MutableList<String> = mutableListOf<String>()
 
@@ -29,6 +45,7 @@ plugins {
 	id("org.gradlex.reproducible-builds") version "1.1"
 	id("com.falsepattern.fpgradle-mc") version "3.3.0"
 	id("com.gradleup.shadow") version "9.3.0"
+	id("io.freefair.compress.trees") version "9.2.0"
 	id("java")
 }
 
@@ -66,6 +83,8 @@ dependencies {
 	implementation("li.cil.ceres:ceres:${ceres_version}")
 	implementation("li.cil.sedna:sedna:${sedna_version}")
 	implementation("li.cil.sedna:sedna-buildroot:${minux_version}")
+
+	implementation("org.tukaani:xz:1.11")
 
 	shadowImplementation("li.cil.ceres:ceres:${ceres_version}")
 	shadowImplementation("li.cil.sedna:sedna:${sedna_version}")
@@ -114,36 +133,130 @@ minecraft_fp {
 	}
 }
 
+
+// TODO: Move sha512sum and DownloadFile to their own file? sub-project?
+fun sha512sum(filepath: String, comparison_hash: String): Boolean {
+	try {
+		val sha512: MessageDigest = MessageDigest.getInstance("SHA-512")
+
+		val checked_file: File = File(filepath)
+		val digested: ByteArray = sha512.digest(Files.readAllBytes(checked_file.toPath()))
+		val hash: String = String.format("%0128x", BigInteger(1, digested))
+
+		if( hash == comparison_hash ) {
+			return true
+		} else {
+			System.out.printf("sha512sum: ERROR: \"%s\" doesn't match hash of \"%s\n", hash, comparison_hash)
+			return false
+		}
+	} catch (thrown: Throwable) {
+		System.out.println(thrown.toString())
+		return false
+	}
+}
+
+fun DownloadFile(fileurl: String, filename: String): String {
+	val tmp_dir: String = Files.createTempDirectory("osbi").toString();
+
+	try {
+		// Read from URL into a temporary file.
+		val src_url: URL = URI.create(fileurl).toURL()
+		val byte_channel: ReadableByteChannel = Channels.newChannel(src_url.openStream())
+
+		val outstream: FileOutputStream = FileOutputStream("${tmp_dir}/${filename}")
+		outstream.getChannel().transferFrom(byte_channel, 0, Long.MAX_VALUE)
+	} catch (thrown: Throwable) {
+		System.out.println(thrown.toString())
+		return ""
+	}
+
+
+	if (File("${tmp_dir}/${filename}").isFile()) {
+		return "${tmp_dir}/${filename}"
+	} else {
+		return ""
+	}
+}
+
+tasks.register("OpenSBI") {
+	val opensbi_filename: String = "opensbi-${opensbi_version}-rv-bin.tar.xz"
+	val opensbi_url:      String = "https://github.com/${opensbi_repo}/releases/download/v${opensbi_version}/${opensbi_filename}"
+
+	val build_dir:   String = project.layout.buildDirectory.get().toString()
+	val out_dir:     String = "${build_dir}/resources/main/assets/ocsedna"
+
+	// Tarball and it's filepath(s).
+	val tar_file: String = DownloadFile(opensbi_url, opensbi_filename)
+	val tarball:  File   = File(tar_file)
+	val tar_dir:  String = tarball.getParent()
+
+	if( sha512sum(tar_file, "${opensbi_hash}") == true ){
+		// Extract the OpenSBI tarball.
+		copy {
+			from(commonsCompress.tarXzTree(tarball))
+
+			// Just extract certain .bin files, don't keep directories.
+			include("**/lp64/generic/firmware/fw_jump.bin")
+			include("**/lp64/generic/firmware/fw_dynamic.bin")
+			eachFile {
+				relativePath = RelativePath(true, *relativePath.segments.drop(6).toTypedArray())
+			}
+			includeEmptyDirs = false
+
+			into(tar_dir)
+		}
+
+		// If the .bin file sums succeed.
+		if( sha512sum("${tar_dir}/fw_jump.bin", fw_jump_hash) && sha512sum("${tar_dir}/fw_dynamic.bin", fw_dynamic_hash) ) {
+			copy {
+				from(fileTree(tar_dir))
+
+				include("**/fw_jump.bin")
+				include("**/fw_dynamic.bin")
+
+				into("${out_dir}/binary/")
+			}
+		} else {
+			throw GradleException("ERROR: opensbi .bin files don't match their hashes.")
+		}
+	} else {
+		throw GradleException("ERROR: opensbi tarball doesn't match it's hash.")
+	}
+}
+
 tasks.reobfJar {
-    // Store paths of any files we get during reobfuscation.
-    getOutputs().getFiles().forEach { file: File ->
-        output_list.add(file.toString())
-    }
+	// Store paths of any files we get during reobfuscation.
+	getOutputs().getFiles().forEach { file: File ->
+		output_list.add(file.toString())
+	}
 }
 
 tasks.register<Jar>("finalJar") {
-    dependsOn("reobfJar")
-    archiveClassifier = "repack"
-    
-    from({
-        // Extract and utilize files from jar paths stored during reobfJar.
-        output_list.map { zipTree(it) }
-    })
+	dependsOn("reobfJar")
+	dependsOn("OpenSBI")
+	archiveClassifier = "repack"
 
-    doLast {
-        getOutputs().getFiles().forEach {file: File ->
-            // Regex to remove archive classifier from filename.
-            val regex_pattern = Pattern.compile("(.+)-repack(.+)")
-            val output_file = regex_pattern.matcher(file.toString()).replaceAll("$1$2")
-        
-            // Move file to the regex result.
-            file.renameTo(file(output_file))
-        }
-    }
+	System.out.println(sourceSets.main.toString())
+
+	from({
+		// Extract and utilize files from jar paths stored during reobfJar.
+		output_list.map { zipTree(it) }
+	})
+
+	doLast {
+		getOutputs().getFiles().forEach {file: File ->
+			// Regex to remove archive classifier from filename.
+			val regex_pattern = Pattern.compile("(.+)-repack(.+)")
+			val output_file = regex_pattern.matcher(file.toString()).replaceAll("$1$2")
+
+			// Move file to the regex result.
+			file.renameTo(file(output_file))
+		}
+	}
 }
 
 tasks.build {
-    dependsOn("finalJar")
+	dependsOn("finalJar")
 }
 
 tasks.shadowJar {

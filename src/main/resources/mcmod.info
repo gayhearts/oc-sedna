@@ -5,6 +5,7 @@
         "description":  "A backport of Sedna from OC2 to OpenComputers",
         "version":      "${modVersion}",
         "mcversion":    "${minecraftVersion}",
+        "credits":      "Modifies and utilizes textures from OpenComputers",
         "url":          "",
         "updateUrl":    "",
         "authors":      ["gayhearts"],

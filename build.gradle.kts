@@ -146,7 +146,7 @@ fun sha512sum(filepath: String, comparison_hash: String): Boolean {
 		if( hash == comparison_hash ) {
 			return true
 		} else {
-			System.out.printf("sha512sum: ERROR: \"%s\" doesn't match hash of \"%s\n", hash, comparison_hash)
+			throw GradleException(String.format("sha512sum: ERROR: \"%s\" doesn't match hash of \"%s\n", hash, comparison_hash))
 			return false
 		}
 	} catch (thrown: Throwable) {
@@ -155,26 +155,24 @@ fun sha512sum(filepath: String, comparison_hash: String): Boolean {
 	}
 }
 
-fun DownloadFile(fileurl: String, filename: String): String {
-	val tmp_dir: String = Files.createTempDirectory("osbi").toString();
-
+fun DownloadFile(fileurl: String, output: String): Boolean {
 	try {
 		// Read from URL into a temporary file.
 		val src_url: URL = URI.create(fileurl).toURL()
 		val byte_channel: ReadableByteChannel = Channels.newChannel(src_url.openStream())
 
-		val outstream: FileOutputStream = FileOutputStream("${tmp_dir}/${filename}")
+		val outstream: FileOutputStream = FileOutputStream(output)
 		outstream.getChannel().transferFrom(byte_channel, 0, Long.MAX_VALUE)
 	} catch (thrown: Throwable) {
 		System.out.println(thrown.toString())
-		return ""
+		return false
 	}
 
 
-	if (File("${tmp_dir}/${filename}").isFile()) {
-		return "${tmp_dir}/${filename}"
+	if (File("${output}").isFile()) {
+		return true
 	} else {
-		return ""
+		return false
 	}
 }
 
@@ -182,15 +180,20 @@ tasks.register("OpenSBI") {
 	val opensbi_filename: String = "opensbi-${opensbi_version}-rv-bin.tar.xz"
 	val opensbi_url:      String = "https://github.com/${opensbi_repo}/releases/download/v${opensbi_version}/${opensbi_filename}"
 
+	// tmp that exist during OpenSBI.
+	val tmp_dir:     String = getTemporaryDir().toString()
+	val tarball:     String = "${tmp_dir}/${opensbi_filename}"
+
+	// Where we want to put everything.
 	val build_dir:   String = project.layout.buildDirectory.get().toString()
 	val out_dir:     String = "${build_dir}/resources/main/assets/ocsedna"
 
-	// Tarball and it's filepath(s).
-	val tar_file: String = DownloadFile(opensbi_url, opensbi_filename)
-	val tarball:  File   = File(tar_file)
-	val tar_dir:  String = tarball.getParent()
+	// Attempt download.
+	if( DownloadFile(opensbi_url, tarball) == false ){
+		throw GradleException(String.format("ERROR: Unable to download file from \"%s\" to \"%s\".\n", opensbi_url, tarball))
+	}
 
-	if( sha512sum(tar_file, "${opensbi_hash}") == true ){
+	if( sha512sum(tarball, "${opensbi_hash}") == true ){
 		// Extract the OpenSBI tarball.
 		copy {
 			from(commonsCompress.tarXzTree(tarball))
@@ -203,13 +206,13 @@ tasks.register("OpenSBI") {
 			}
 			includeEmptyDirs = false
 
-			into(tar_dir)
+			into(tmp_dir)
 		}
 
 		// If the .bin file sums succeed.
-		if( sha512sum("${tar_dir}/fw_jump.bin", fw_jump_hash) && sha512sum("${tar_dir}/fw_dynamic.bin", fw_dynamic_hash) ) {
+		if( sha512sum("${tmp_dir}/fw_jump.bin", fw_jump_hash) && sha512sum("${tmp_dir}/fw_dynamic.bin", fw_dynamic_hash) ) {
 			copy {
-				from(fileTree(tar_dir))
+				from(fileTree(tmp_dir))
 
 				include("**/fw_jump.bin")
 				include("**/fw_dynamic.bin")

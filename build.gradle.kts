@@ -77,7 +77,7 @@ minecraft_fp {
 		//Valid values: legacy, jvmDowngrader, modern
 		compatibility        = modern                                 //Convention: legacy
 		version              = JavaVersion.VERSION_25                 //Convention, determined by compatibility
-		vendor               = JvmVendorSpec.ORACLE                      //Convention
+		vendor               = JvmVendorSpec.ADOPTIUM                      //Convention
 		modernRuntimeVersion = JavaVersion.VERSION_25       //Convention, determined by compatibility
 		//        //Valid values: doNotShade, projectIsLgpl21PlusCompatible, iWillPublishTheUnshadedJarForLgpl21PlusCompliance
 		jvmDowngraderShade   = doNotShade                      //Convention

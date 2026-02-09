@@ -7,6 +7,7 @@ import scala.collection.Seq;
 import static java.util.Map.entry;
 import java.util.Map;
 import java.util.ArrayList;
+import java.io.InputStream;
 
 // OpenComputers
 import li.cil.oc.api.driver.DeviceInfo.DeviceAttribute;
@@ -46,10 +47,12 @@ public class FlashMemoryInit {
         item_type.add(new ItemStack(flash_item));
         this.flash_item_seq = JavaConverters.asScalaIteratorConverter(item_type.iterator()).asScala().toSeq();
 
+        // Initialize 
         
         byte[] code = {'h', 'r', 'm', 'm', 'm', 'm', '.'};
-        byte[] data = {'t', 'e', 's', 't', 'i', 'n', 'g'};
-       
+        byte[] data = OpenSBI.GetJumpFirmware();
+
+
         this.opensbi = CreateFlash(this.flash_item, "OpenSBI", code, data, true);
        
 

@@ -263,12 +263,15 @@ tasks.register<Jar>("finalJar") {
 	dependsOn("OpenSBI")
 	archiveClassifier = "repack"
 
-	System.out.println(sourceSets.main.toString())
-
 	from({
 		// Extract and utilize files from jar paths stored during reobfJar.
 		output_list.map { zipTree(it) }
 	})
+
+	from("src/main/resources/assets/binary") {
+		include("fw_jump.bin");
+		include("fw_dynamic.bin")
+	}
 
 	doLast {
 		getOutputs().getFiles().forEach {file: File ->

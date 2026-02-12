@@ -17,10 +17,12 @@ import li.cil.sedna.fs.HostFileSystem;
 import li.cil.sedna.riscv.R5Board;
 import li.cil.sedna.riscv.R5CPU;
 
+// OpenComputers
+import li.cil.oc.api.machine.Machine;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
-
 
 public class SednaVMRunner {
 	public static int VM_MEMORY_MEGABYTES = 32;
@@ -28,6 +30,8 @@ public class SednaVMRunner {
 
 	public static int VM_CPU_FREQUENCY = 25_000_000;
 
+	public Machine machine;
+	public String eeprom_address = "";
 	public OpenComputersGPU gpu;
 
 	public R5Board board = new R5Board();
@@ -36,7 +40,6 @@ public class SednaVMRunner {
 	public UART16550A uart = new UART16550A();
 
 	public Images images;
-
 
 	public void SednaVMStep() {
 		int remaining = 0;
@@ -96,7 +99,7 @@ public class SednaVMRunner {
 
 				if (board.isRestarting()) {
 					try {
-						loadProgramFile(memory, images.firmware());
+						loadProgramFile(memory, ReadFlash(this.machine, this.eeprom_address));
 						loadProgramFile(memory, images.kernel(), 0x200000);
 
 						board.initialize();
@@ -148,7 +151,7 @@ public class SednaVMRunner {
 
 		this.gpu.WriteString("loading firmware\n");
 		// Add device firmware.
-		loadProgramFile(memory, images.firmware());
+		loadProgramFile(memory, ReadFlash(this.machine, this.eeprom_address));
 		loadProgramFile(memory, images.kernel(), 0x200000);
 		this.gpu.WriteString("Firmware loaded!\n");
 
@@ -164,6 +167,23 @@ public class SednaVMRunner {
 		board.setRunning(true);
 	}
 
+    private static InputStream ReadFlash(Machine machine, String address) {
+        try {
+            Object[] size   = machine.invoke(address, "getSize", new Object[]{});
+            Object[] buffer = machine.invoke(address, "get", new Object[]{});
+
+            if( size[0] instanceof Integer && buffer[0] instanceof byte[] ) {
+                return new ByteArrayInputStream((byte[])buffer[0], 0, (int)size[0]);
+			} else {
+				return new ByteArrayInputStream(null);
+			}
+        } catch (Throwable thrown) {
+            System.out.println(thrown.toString());
+        }
+
+
+        return new ByteArrayInputStream(null);
+    }
 
 	private static void loadProgramFile(final PhysicalMemory memory, final InputStream stream) throws Exception {
 		loadProgramFile(memory, stream, 0);

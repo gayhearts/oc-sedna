@@ -49,9 +49,10 @@ public class SednaVM {
 	    break;
 	  case "keyboard":
 	    this.gpu.keyboard_address = key;
-	    System.out.printf("%s\n", key);
 	    break;
 	 }
+
+      System.out.printf("Found \"%s\": \"%s\".\n", value, key);
       }
 
       if(screen_address != null && gpu.address != null) {
@@ -70,6 +71,8 @@ public class SednaVM {
 	    
 	    gpu.initialize(machine);
 	    this.sedna_vm.gpu = this.gpu;
+        this.sedna_vm.machine = this.machine;
+        this.sedna_vm.eeprom_address = this.eeprom_address;
 	    this.sedna_vm.SednaVMRunner();
 	 } catch (Throwable t) {
 	    System.out.printf( "%s\n", t.toString() );

@@ -1,7 +1,6 @@
 package gayhearts.ocsedna;
 
 // ocsedna
-import gayhearts.ocsedna.firmware.FlashMemoryInit;
 import gayhearts.ocsedna.firmware.FlashMemoryDriver;
 
 // OpenComputers
@@ -23,19 +22,13 @@ public class SednaInitialization {
 	@Mod.Instance
 	public static SednaInitialization instance;
 
-    public static FlashMemoryInit flash;
-
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		Machine.add(SednaArchitecture.class);
-    
-        flash = new FlashMemoryInit();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        flash.RegisterRecipes();
-
         li.cil.oc.api.Driver.add(new FlashMemoryDriver());
     }
 }

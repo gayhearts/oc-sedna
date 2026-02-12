@@ -8,15 +8,51 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-
 public class FlashMemoryItem extends Item {
-    public void FlashMemoryItem() {
+    FlashMemoryItem() {
         this.setUnlocalizedName("flash");
         this.setTextureName("ocsedna:flash");
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
 		this.setMaxStackSize(1);
         this.setCreativeTab(li.cil.oc.api.CreativeTab.instance);
+    }
+
+    public ItemStack createItemStack() {
+        return createItemStack("FlashMemory", null, null, false, 1);
+    }
+
+    public ItemStack createItemStack(int count) {
+        return createItemStack("FlashMemory", null, null, false, count);
+    }
+
+    // camelCase to fit in with Item data type.
+    public ItemStack createItemStack(String name, byte[] code, byte[] data, boolean readonly, int count){
+        NBTTagCompound nbt = new NBTTagCompound();
+
+        if( name != null ) {
+            nbt.setString("oc:label", name);
+        }
+
+        if( code != null ) {
+            nbt.setByteArray("oc:eeprom", code);
+        }
+
+        if( data != null ) {
+            nbt.setByteArray("oc:userdata", data);
+        }
+
+        nbt.setBoolean("oc:readonly", readonly);
+
+        NBTTagCompound nbt_wrapped = new NBTTagCompound();
+        nbt_wrapped.setTag("oc:data", nbt);
+
+        ItemStack stack = new ItemStack(this, count);
+        stack.setTagCompound(nbt_wrapped);
+
+        stack.copy();
+    
+        return stack;
     }
 
     @Override 

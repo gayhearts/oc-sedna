@@ -34,66 +34,32 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class FlashMemoryInit {
-    public FlashMemoryItem flash_item;
-    public Seq<Object>     flash_item_seq;
-    public ItemStack       opensbi;
-
-    public FlashMemoryInit() {
-        /// Add to OC???
-        this.flash_item = new FlashMemoryItem();
-
-        
-        ArrayList<Object> item_type = new ArrayList<Object>();
-        item_type.add(new ItemStack(flash_item));
-        this.flash_item_seq = JavaConverters.asScalaIteratorConverter(item_type.iterator()).asScala().toSeq();
-
+    public static ItemStack Setup() {
         // Initialize 
-        
-        byte[] code = {'h', 'r', 'm', 'm', 'm', 'm', '.'};
-        byte[] data = OpenSBI.GetJumpFirmware();
+        byte[] data = {'h', 'r', 'm', 'm', 'm', 'm', '.'};
+        byte[] code = OpenSBI.GetDynamicFirmware();
 
+        // Create data.
+        FlashMemoryItem flash = new FlashMemoryItem();
+        ItemStack bare_stack = flash.createItemStack(1);
+        ItemStack osbi_stack = flash.createItemStack("OpenSBI", code, data, false, 1);
 
-        this.opensbi = CreateFlash(this.flash_item, "OpenSBI", code, data, true);
-       
+        // Register bare flash.
+        GameRegistry.registerItem(flash, "flash");
+        GameRegistry.registerCustomItemStack("flash", bare_stack);
+        OreDictionary.registerOre("ocsedna:flash", flash);
 
-        // Main item.
-        GameRegistry.registerItem(this.flash_item, "flash");
-        OreDictionary.registerOre("ocsedna:flash", this.flash_item);
+        // Register OpenSBI.
+        GameRegistry.registerCustomItemStack("flash", osbi_stack);
+        OreDictionary.registerOre("ocsedna:flash",    osbi_stack);
 
-        // OpenSBI Stack.
-        GameRegistry.registerCustomItemStack("flash", this.opensbi);
-        OreDictionary.registerOre("ocsedna:flash",    this.opensbi);
-    }
+        // Add OpenSBI Recipe.
+        ArrayList<Object> item_type = new ArrayList<Object>();
+        item_type.add(bare_stack);
+        Seq<Object> flash_item_seq = JavaConverters.asScalaIteratorConverter(item_type.iterator()).asScala().toSeq();
 
-    public void RegisterRecipes() {
-        GameRegistry.addRecipe(new ExtendedShapelessOreRecipe(this.opensbi, this.flash_item_seq));
-    }
+        GameRegistry.addRecipe(new ExtendedShapelessOreRecipe(osbi_stack, flash_item_seq));
 
-    public static ItemStack CreateFlash(Item item, String name, byte[] code, byte[] data, boolean readonly){
-        NBTTagCompound nbt = new NBTTagCompound();
-
-        if( name != null ) {
-            nbt.setString("oc:label", name);
-        }
-
-        if( code != null ) {
-            nbt.setByteArray("oc:eeprom", code);
-        }
-
-        if( data != null ) {
-            nbt.setByteArray("oc:userdata", data);
-        }
-
-        nbt.setBoolean("oc:readonly", readonly);
-
-        NBTTagCompound stackNbt = new NBTTagCompound();
-        stackNbt.setTag("oc:data", nbt);
-
-        ItemStack stack = new ItemStack(item);
-        stack.setTagCompound(stackNbt);
-
-        stack.copy();
-
-        return stack;
+        return bare_stack;
     }
 }

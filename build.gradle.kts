@@ -12,6 +12,10 @@ import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.math.BigInteger
 
+// OpenComputersSedna info
+var modId: String by extra
+var modGroup: String by extra
+
 // Minecraft info.
 var minecraft_version = extra["minecraft_version"]
 var minecraft_sdk     = extra["minecraft_sdk"]
@@ -49,7 +53,7 @@ plugins {
 	id("java")
 }
 
-group = "gayhearts"
+var group = extra["modGroup"]
 
 java.toolchain{
 	languageVersion.set(JavaLanguageVersion.of(25))
@@ -91,7 +95,23 @@ dependencies {
 	shadowImplementation("li.cil.sedna:sedna-buildroot:${minux_version}")
 }
 
+fun getGitRef(): String {
+    try {
+        var stdout = providers.exec {
+          commandLine("git", "rev-parse", "--short", "HEAD")
+        }.standardOutput.asText.get()
+
+        return stdout.toString().trim()
+    } catch (ignored: Throwable) {
+        return "unknown"
+    }
+}
+
+var build_ref: String = getGitRef()
+
 minecraft_fp {
+	version = "${build_ref}"
+
 	java {
 		//Valid values: legacy, jvmDowngrader, modern
 		compatibility        = modern                                 //Convention: legacy
@@ -124,6 +144,10 @@ minecraft_fp {
 		//        // optional
 		//        // Enabled by default, makes your mod jars more reproducible between rebuilds if the source code didn't change
 		reproducibleJars = true //Convention
+
+		maven {
+			artifact = "${modId}"
+		}
 	}
 
 	//optional

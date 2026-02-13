@@ -2,6 +2,7 @@ package gayhearts.ocsedna;
 
 // ocsedna
 import gayhearts.ocsedna.firmware.FlashMemoryDriver;
+import gayhearts.ocsedna.memory.MemoryDriver;
 
 // OpenComputers
 import li.cil.oc.api.Machine;
@@ -30,5 +31,7 @@ public class SednaInitialization {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         li.cil.oc.api.Driver.add(new FlashMemoryDriver());
+		li.cil.oc.api.Driver.add(new MemoryDriver(4096, "memory4MiB"));
+		li.cil.oc.api.Driver.add(new MemoryDriver(6144, "memory6MiB"));
     }
 }

@@ -34,8 +34,6 @@ public class SednaArchitecture implements Architecture {
 
 	public boolean isInitialized() { return true; }
 
-	public void recomputeMemory() {}
-
 	public boolean initialize() {
 		// Set up new VM here, and register all API callbacks you want to
 		// provide to it.
@@ -53,6 +51,18 @@ public class SednaArchitecture implements Architecture {
 	}
 
 	public boolean recomputeMemory(Iterable<ItemStack> components) {
+		System.out.println("recomputeMemory");
+		for( ItemStack stack: components ){
+			System.out.println("found: " + stack.toString());
+
+			li.cil.oc.api.driver.Item device = Driver.driverFor(stack);
+
+			if( device instanceof Memory ){
+				Memory mem = (Memory) device;
+
+				System.out.println("amt: " + mem.amount(stack));
+			}
+		}
 		return true;
 	}
 

@@ -1,8 +1,10 @@
 package gayhearts.ocsedna;
 
 import li.cil.oc.api.Driver;
+
 import li.cil.oc.api.driver.item.Memory;
-import net.minecraft.item.Item;
+
+import li.cil.oc.api.driver.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import li.cil.oc.api.machine.Architecture;
@@ -13,12 +15,14 @@ import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.machine.Signal;
 import li.cil.oc.api.network.Component;
 import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.Environment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.Map;
+import java.lang.Thread;
 
 /** This is the class you implement; Architecture is from the OC API. */
 @Architecture.Name("Sedna")
@@ -51,16 +55,38 @@ public class SednaArchitecture implements Architecture {
 	}
 
 	public boolean recomputeMemory(Iterable<ItemStack> components) {
+		//li.cil.oc.api.machine.MachineHost.internalComponents()
+
 		System.out.println("recomputeMemory");
 		for( ItemStack stack: components ){
 			System.out.println("found: " + stack.toString());
 
-			li.cil.oc.api.driver.Item device = Driver.driverFor(stack);
+			Item   device  = Driver.driverFor(stack);
+			String address = null;
 
 			if( device instanceof Memory ){
-				Memory mem = (Memory) device;
+				NBTTagCompound tag = device.dataTag(stack);
 
-				System.out.println("amt: " + mem.amount(stack));
+				if( tag != null ){
+					NBTTagCompound node = tag.getCompoundTag("node");
+
+					if( node != null ){
+						address = node.getString("address");
+					} else{
+						continue;
+					}
+				} else{
+					continue;
+				}
+
+				Memory mem = (Memory) device;
+				System.out.printf("Memory of size: %s", mem.amount(stack));
+			
+				if( address != null ){
+					System.out.printf(", address: %s(%d)\n", address, machine.host().componentSlot(address));
+				} else{
+					System.out.printf("\n");
+				}
 			}
 		}
 		return true;
@@ -87,6 +113,8 @@ public class SednaArchitecture implements Architecture {
 			else {
 				result = vm.run(null);
 			}
+
+			Thread.sleep(100_000);
 
 			// You'll want to define some internal protocol by which to decide
 			// when to perform a synchronized call. Let's say we expect the VM

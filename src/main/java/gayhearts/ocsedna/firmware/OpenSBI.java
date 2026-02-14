@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 public class OpenSBI {
     private static byte[] GetFile(String filename) {
         try {
-            InputStream in_stream = OpenSBI.class.getResourceAsStream("/assets/ocsedna/binary/" + filename);
+            InputStream in_stream = OpenSBI.class.getResourceAsStream(filename);
             ByteArrayOutputStream out_stream = new ByteArrayOutputStream();
 
             if( in_stream != null && out_stream != null ) {
@@ -35,11 +35,15 @@ public class OpenSBI {
     }
 
     public static byte[] GetDynamicFirmware() {
-        return GetFile("fw_dynamic.bin");
+        return GetFile("/assets/ocsedna/binary/fw_dynamic.bin");
     }
 
     public static byte[] GetJumpFirmware() {
-        return GetFile("fw_jump.bin");
+        return GetFile("/assets/ocsedna/binary/fw_jump.bin");
 
     }
+
+	public static byte[] GetLegacyFirmware() {
+		return GetFile("/generated/fw_jump.bin");
+	}
 }

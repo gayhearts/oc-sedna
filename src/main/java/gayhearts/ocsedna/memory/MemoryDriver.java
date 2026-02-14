@@ -32,21 +32,21 @@ public class MemoryDriver extends DriverItem implements Memory {
 	public final int size;
 	public final String name;
 
-    public MemoryDriver(int size, String name) {
+	public MemoryDriver(int size, String name) {
 		this.size = size;
 		this.name = name;
-        super(MemoryInit.Setup(name));
-    }
+		super(MemoryInit.Setup(name));
+	}
 
-    @Override
-    public ManagedEnvironment createEnvironment(ItemStack stack, EnvironmentHost host) {
-        if (host.world()  != null && host.world().isRemote) {
-            return null;
-        } else {
-            MemoryBase mem = new MemoryBase(host, 1);
+	@Override
+	public ManagedEnvironment createEnvironment(ItemStack stack, EnvironmentHost host) {
+		if (host.world()  != null && host.world().isRemote) {
+			return null;
+		} else {
+			MemoryBase mem = new MemoryBase(host, 1);
 			return mem;
-        }
-    }
+		}
+	}
 
 	@Override
 	public String slot(ItemStack stack){
@@ -61,9 +61,9 @@ public class MemoryDriver extends DriverItem implements Memory {
 		return this.size;
 	}
 	
-    @Override
-    public int tier(ItemStack stack) {
-        // One higher than OpenComputers EEPROM.
-        return 1;
-    }
+	@Override
+	public int tier(ItemStack stack) {
+		// One higher than OpenComputers EEPROM.
+		return 1;
+	}
 }

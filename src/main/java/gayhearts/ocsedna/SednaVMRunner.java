@@ -167,23 +167,23 @@ public class SednaVMRunner {
 		board.setRunning(true);
 	}
 
-    private static InputStream ReadFlash(Machine machine, String address) {
-        try {
-            Object[] size   = machine.invoke(address, "getSize", new Object[]{});
-            Object[] buffer = machine.invoke(address, "get", new Object[]{});
+	private static InputStream ReadFlash(Machine machine, String address) {
+		try {
+			Object[] size   = machine.invoke(address, "getSize", new Object[]{});
+			Object[] buffer = machine.invoke(address, "get", new Object[]{});
 
-            if( size[0] instanceof Integer && buffer[0] instanceof byte[] ) {
-                return new ByteArrayInputStream((byte[])buffer[0], 0, (int)size[0]);
+			if( size[0] instanceof Integer && buffer[0] instanceof byte[] ) {
+				return new ByteArrayInputStream((byte[])buffer[0], 0, (int)size[0]);
 			} else {
 				return new ByteArrayInputStream(null);
 			}
-        } catch (Throwable thrown) {
-            System.out.println(thrown.toString());
-        }
+		} catch (Throwable thrown) {
+			System.out.println(thrown.toString());
+		}
 
 
-        return new ByteArrayInputStream(null);
-    }
+		return new ByteArrayInputStream(null);
+	}
 
 	private static void loadProgramFile(final PhysicalMemory memory, final InputStream stream) throws Exception {
 		loadProgramFile(memory, stream, 0);

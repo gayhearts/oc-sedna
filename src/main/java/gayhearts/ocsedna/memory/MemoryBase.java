@@ -50,28 +50,28 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class MemoryBase extends ManagedEnvironment implements DeviceInfo {
-    protected final EnvironmentHost host;
+	protected final EnvironmentHost host;
 	protected static int tier;
 	protected static double clock;
 	
-    MemoryBase(EnvironmentHost host, int tier) {
-        this.host = host;
+	MemoryBase(EnvironmentHost host, int tier) {
+		this.host = host;
 		MemoryBase.tier = tier;
 		MemoryBase.clock = (Settings.get().callBudgets()[tier] * 1000);
 		
-	    this.setNode(Network.newNode(this, Visibility.Neighbors).
+		this.setNode(Network.newNode(this, Visibility.Neighbors).
 					 withComponent("memory", Visibility.Neighbors).
 					 withConnector().
 					 create());
 //		this.setNode(tmp);
-    }
+	}
 
 
-    private static String  namespace   = "ocsedna";
+	private static String  namespace   = "ocsedna";
 
-    protected static Map<String, String> deviceInfo() {
-        System.out.println("deviceInfo");
-        final Map<String, String> device_info = Map.ofEntries
+	protected static Map<String, String> deviceInfo() {
+		System.out.println("deviceInfo");
+		final Map<String, String> device_info = Map.ofEntries
 		(
 			entry(DeviceAttribute.Class,       DeviceClass.Memory),
 			entry(DeviceAttribute.Description, "Memory Bank"),
@@ -80,12 +80,12 @@ public class MemoryBase extends ManagedEnvironment implements DeviceInfo {
 			entry(DeviceAttribute.Clock,       String.valueOf(clock))
 		);
 
-        return device_info;
-    };
-    
-    @Override
-    public Map<String, String> getDeviceInfo() {
-        System.out.println("getDeviceInfo");
-        return deviceInfo();
-    }
+		return device_info;
+	};
+	
+	@Override
+	public Map<String, String> getDeviceInfo() {
+		System.out.println("getDeviceInfo");
+		return deviceInfo();
+	}
 }

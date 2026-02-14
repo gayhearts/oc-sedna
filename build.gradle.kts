@@ -96,15 +96,15 @@ dependencies {
 }
 
 fun getGitRef(): String {
-    try {
-        var stdout = providers.exec {
-          commandLine("git", "rev-parse", "--short", "HEAD")
-        }.standardOutput.asText.get()
+	try {
+		var stdout = providers.exec {
+		  commandLine("git", "rev-parse", "--short", "HEAD")
+		}.standardOutput.asText.get()
 
-        return stdout.toString().trim()
-    } catch (ignored: Throwable) {
-        return "unknown"
-    }
+		return stdout.toString().trim()
+	} catch (ignored: Throwable) {
+		return "unknown"
+	}
 }
 
 var build_ref: String = getGitRef()

@@ -11,15 +11,15 @@ import net.minecraft.nbt.NBTTagCompound;
 public class MemoryItem extends Item {
 	private final String name;
 
-    MemoryItem(String name) {
+	MemoryItem(String name) {
 		if( name != null && name.length() > 0 ){
 			this.name = name;
-	        this.setUnlocalizedName(this.name);
-		    this.setTextureName("ocsedna:" + this.name);
-	        this.setHasSubtypes(true);
-		    this.setMaxDamage(0);
+			this.setUnlocalizedName(this.name);
+			this.setTextureName("ocsedna:" + this.name);
+			this.setHasSubtypes(true);
+			this.setMaxDamage(0);
 			this.setMaxStackSize(1);
-	        this.setCreativeTab(li.cil.oc.api.CreativeTab.instance);
+			this.setCreativeTab(li.cil.oc.api.CreativeTab.instance);
 		} else{
 			if( name == null ) {
 				throw new IllegalArgumentException("argument \"name\" is null.");
@@ -31,7 +31,7 @@ public class MemoryItem extends Item {
 		}
 	}
 
-    @SideOnly(Side.CLIENT)
+	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister par1IconRegister)
 	{
 		this.itemIcon = par1IconRegister.registerIcon("ocsedna:" + this.name);

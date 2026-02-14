@@ -9,68 +9,68 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class FlashMemoryItem extends Item {
-    FlashMemoryItem() {
-        this.setUnlocalizedName("flash");
-        this.setTextureName("ocsedna:flash");
-        this.setHasSubtypes(true);
-        this.setMaxDamage(0);
+	FlashMemoryItem() {
+		this.setUnlocalizedName("flash");
+		this.setTextureName("ocsedna:flash");
+		this.setHasSubtypes(true);
+		this.setMaxDamage(0);
 		this.setMaxStackSize(1);
-        this.setCreativeTab(li.cil.oc.api.CreativeTab.instance);
-    }
+		this.setCreativeTab(li.cil.oc.api.CreativeTab.instance);
+	}
 
-    public ItemStack createItemStack() {
-        return createItemStack("FlashMemory", null, null, false, 1);
-    }
+	public ItemStack createItemStack() {
+		return createItemStack("FlashMemory", null, null, false, 1);
+	}
 
-    public ItemStack createItemStack(int count) {
-        return createItemStack("FlashMemory", null, null, false, count);
-    }
+	public ItemStack createItemStack(int count) {
+		return createItemStack("FlashMemory", null, null, false, count);
+	}
 
-    // camelCase to fit in with Item data type.
-    public ItemStack createItemStack(String name, byte[] code, byte[] data, boolean readonly, int count){
-        NBTTagCompound nbt = new NBTTagCompound();
+	// camelCase to fit in with Item data type.
+	public ItemStack createItemStack(String name, byte[] code, byte[] data, boolean readonly, int count){
+		NBTTagCompound nbt = new NBTTagCompound();
 
-        if( name != null ) {
-            nbt.setString("oc:label", name);
-        }
+		if( name != null ) {
+			nbt.setString("oc:label", name);
+		}
 
-        if( code != null ) {
-            nbt.setByteArray("oc:eeprom", code);
-        }
+		if( code != null ) {
+			nbt.setByteArray("oc:eeprom", code);
+		}
 
-        if( data != null ) {
-            nbt.setByteArray("oc:userdata", data);
-        }
+		if( data != null ) {
+			nbt.setByteArray("oc:userdata", data);
+		}
 
-        nbt.setBoolean("oc:readonly", readonly);
+		nbt.setBoolean("oc:readonly", readonly);
 
-        NBTTagCompound nbt_wrapped = new NBTTagCompound();
-        nbt_wrapped.setTag("oc:data", nbt);
+		NBTTagCompound nbt_wrapped = new NBTTagCompound();
+		nbt_wrapped.setTag("oc:data", nbt);
 
-        ItemStack stack = new ItemStack(this, count);
-        stack.setTagCompound(nbt_wrapped);
+		ItemStack stack = new ItemStack(this, count);
+		stack.setTagCompound(nbt_wrapped);
 
-        stack.copy();
-    
-        return stack;
-    }
+		stack.copy();
+	
+		return stack;
+	}
 
-    @Override 
-    public String getItemStackDisplayName(ItemStack stack) {
-        if (stack.hasTagCompound()) {
-            NBTTagCompound tag = stack.getTagCompound();
-            if (tag.hasKey("oc:data")) {
-                NBTTagCompound data = tag.getCompoundTag("oc:data");
-                    if (data.hasKey("oc:label")) {
-                        return data.getString("oc:label");
-                    }
-            }
-        }
+	@Override 
+	public String getItemStackDisplayName(ItemStack stack) {
+		if (stack.hasTagCompound()) {
+			NBTTagCompound tag = stack.getTagCompound();
+			if (tag.hasKey("oc:data")) {
+				NBTTagCompound data = tag.getCompoundTag("oc:data");
+					if (data.hasKey("oc:label")) {
+						return data.getString("oc:label");
+					}
+			}
+		}
 
-        return super.getItemStackDisplayName(stack);
-    }
+		return super.getItemStackDisplayName(stack);
+	}
 
-    @SideOnly(Side.CLIENT)
+	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister par1IconRegister)
 	{
 		this.itemIcon = par1IconRegister.registerIcon("ocsedna:flash");

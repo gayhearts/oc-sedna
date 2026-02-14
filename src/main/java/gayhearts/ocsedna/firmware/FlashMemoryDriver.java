@@ -23,30 +23,30 @@ import gayhearts.ocsedna.firmware.FlashMemoryItem;
 
 
 public class FlashMemoryDriver extends DriverItem {
-    public FlashMemoryDriver() {
-        super(FlashMemoryInit.Setup());
-    }
+	public FlashMemoryDriver() {
+		super(FlashMemoryInit.Setup());
+	}
 
-    @Override
-    public ManagedEnvironment createEnvironment(ItemStack stack, EnvironmentHost host) {
-        if (host.world()  != null && host.world().isRemote) {
-            return null;
-        } else {
-            FlashMemoryBase flash = new FlashMemoryBase(host);
-            flash.init();
+	@Override
+	public ManagedEnvironment createEnvironment(ItemStack stack, EnvironmentHost host) {
+		if (host.world()  != null && host.world().isRemote) {
+			return null;
+		} else {
+			FlashMemoryBase flash = new FlashMemoryBase(host);
+			flash.init();
 
-            return flash;
-        }
-    }
+			return flash;
+		}
+	}
 
-    @Override
-    public String slot(ItemStack stack) {
-        return Slot.EEPROM();
-    }
+	@Override
+	public String slot(ItemStack stack) {
+		return Slot.EEPROM();
+	}
 
-    @Override
-    public int tier(ItemStack stack) {
-        // One higher than OpenComputers EEPROM.
-        return 1;
-    }
+	@Override
+	public int tier(ItemStack stack) {
+		// One higher than OpenComputers EEPROM.
+		return 1;
+	}
 }

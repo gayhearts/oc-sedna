@@ -34,16 +34,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class MemoryInit {
-    public static ItemStack Setup(String name) {
+	public static ItemStack Setup(String name) {
 		// Create data.
-        MemoryItem mem = new MemoryItem(name);
-        ItemStack mem_stack = new ItemStack(mem, 1);
+		MemoryItem mem = new MemoryItem(name);
+		ItemStack mem_stack = new ItemStack(mem, 1);
 
-        // Register bare flash.
-        GameRegistry.registerItem(mem, name);
-        GameRegistry.registerCustomItemStack(name, mem_stack);
-        OreDictionary.registerOre("ocsedna:" + name, mem);
-        
-        return mem_stack;
-    }
+		// Register bare flash.
+		GameRegistry.registerItem(mem, name);
+		GameRegistry.registerCustomItemStack(name, mem_stack);
+		OreDictionary.registerOre("ocsedna:" + name, mem);
+		
+		return mem_stack;
+	}
 }

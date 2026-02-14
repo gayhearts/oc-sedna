@@ -1,0 +1,36 @@
+package gayhearts.ocsedna.drivers.adapter;
+
+import li.cil.sedna.api.device.PhysicalMemory;
+import net.minecraft.item.ItemStack;
+
+public class OpenComputersMemory{
+	private li.cil.oc.api.driver.item.Memory driver;
+	
+	private ItemStack      stack;
+	private Integer        size;
+	private PhysicalMemory device;
+	
+	public OpenComputersMemory( li.cil.oc.api.driver.item.Memory driver, ItemStack stack ){
+		double tmp = driver.amount( stack );
+		Integer size;
+		
+		if( tmp > Integer.MIN_VALUE && tmp < Integer.MAX_VALUE ){
+			size = (int) tmp;
+		} else{
+			throw new IllegalArgumentException( String.format("Value outside of Integer bounds.") );
+		}
+		
+		this.driver = driver;
+		this.stack  = stack;
+		this.size   = size;
+		this.device = li.cil.sedna.device.memory.Memory.create(size);
+	}
+	
+	public Integer GetSize(){
+		return size;
+	}
+	
+	public PhysicalMemory GetDevice(){
+		return device;
+	}
+}

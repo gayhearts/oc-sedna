@@ -8,6 +8,6 @@ public class SednaMemoryList extends ObjectList {
 	public SednaMemoryList(){
 		super(OpenComputersMemory.class);
 	}
-	
-	
+
+
 }

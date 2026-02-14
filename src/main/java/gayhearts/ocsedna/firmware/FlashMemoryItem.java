@@ -51,7 +51,7 @@ public class FlashMemoryItem extends Item {
 		stack.setTagCompound(nbt_wrapped);
 
 		stack.copy();
-	
+
 		return stack;
 	}
 
@@ -61,9 +61,9 @@ public class FlashMemoryItem extends Item {
 			NBTTagCompound tag = stack.getTagCompound();
 			if (tag.hasKey("oc:data")) {
 				NBTTagCompound data = tag.getCompoundTag("oc:data");
-					if (data.hasKey("oc:label")) {
-						return data.getString("oc:label");
-					}
+				if (data.hasKey("oc:label")) {
+					return data.getString("oc:label");
+				}
 			}
 		}
 

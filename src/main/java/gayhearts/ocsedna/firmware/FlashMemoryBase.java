@@ -92,7 +92,7 @@ public class FlashMemoryBase extends ManagedEnvironment implements DeviceInfo {
 
 		return device_info;
 	};
-	
+
 	@Callback(direct = true, doc = "function():string -- Get the currently stored byte array.")
 	public Object[] get(Context context, Arguments args) {
 		System.out.println("get");
@@ -153,7 +153,7 @@ public class FlashMemoryBase extends ManagedEnvironment implements DeviceInfo {
 		//if (!node().tryChangeBuffer(-Settings.get().eepromWriteCost())) {
 		//    return new Object[] {"not enough energy"};
 		//} 
-		
+
 		byte[] new_data = args.optByteArray(0, new byte[eeprom_size]);
 
 		if (new_data.length > eeprom_size) {
@@ -206,7 +206,7 @@ public class FlashMemoryBase extends ManagedEnvironment implements DeviceInfo {
 	public void save(NBTTagCompound nbt) {
 		System.out.println("save");
 		super.save(nbt);
-		
+
 		nbt.setByteArray("oc:eeprom", codeData.array());
 		nbt.setString("oc:label", label);
 		nbt.setBoolean("oc:readonly", readonly);

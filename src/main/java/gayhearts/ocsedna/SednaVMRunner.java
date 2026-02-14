@@ -63,31 +63,31 @@ public class SednaVMRunner {
 					//System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
 
 					switch (KeyCodes.lwjgl_keys[user_input]) {
-					case KeyCodes.special_offset+28:
-						uart.putByte((byte)'\n');
-						break;
-					case KeyCodes.special_offset+200: //up
-						uart.putByte((byte)0x1B);
-						uart.putByte((byte)'[');
-						uart.putByte((byte)'A');
-						break;
-					case KeyCodes.special_offset+203: //left
-						uart.putByte((byte)0x1B);
-						uart.putByte((byte)'[');
-						uart.putByte((byte)'D');
-						break;
-					case KeyCodes.special_offset+205: //right
-						uart.putByte((byte)0x1B);
-						uart.putByte((byte)'[');
-						uart.putByte((byte)'C');
-						break;
-					case KeyCodes.special_offset+208: //down
-						uart.putByte((byte)0x1B);
-						uart.putByte((byte)'[');
-						uart.putByte((byte)'B');
-						break;
-					default:
-						uart.putByte((byte)KeyCodes.lwjgl_keys[user_input]);
+						case KeyCodes.special_offset+28:
+							uart.putByte((byte)'\n');
+							break;
+						case KeyCodes.special_offset+200: //up
+							uart.putByte((byte)0x1B);
+							uart.putByte((byte)'[');
+							uart.putByte((byte)'A');
+							break;
+						case KeyCodes.special_offset+203: //left
+							uart.putByte((byte)0x1B);
+							uart.putByte((byte)'[');
+							uart.putByte((byte)'D');
+							break;
+						case KeyCodes.special_offset+205: //right
+							uart.putByte((byte)0x1B);
+							uart.putByte((byte)'[');
+							uart.putByte((byte)'C');
+							break;
+						case KeyCodes.special_offset+208: //down
+							uart.putByte((byte)0x1B);
+							uart.putByte((byte)'[');
+							uart.putByte((byte)'B');
+							break;
+						default:
+							uart.putByte((byte)KeyCodes.lwjgl_keys[user_input]);
 					}
 				}
 

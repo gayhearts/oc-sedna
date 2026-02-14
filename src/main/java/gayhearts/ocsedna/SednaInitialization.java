@@ -14,10 +14,10 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(
-	modid        = Tags.MOD_ID,
-	name         = Tags.MOD_NAME,
-	version	     = Tags.MOD_VERSION,
-	dependencies = "required-after:OpenComputers@[1.12.12-GTNH,)")
+modid        = Tags.MOD_ID,
+name         = Tags.MOD_NAME,
+version	     = Tags.MOD_VERSION,
+dependencies = "required-after:OpenComputers@[1.12.12-GTNH,)")
 
 public class SednaInitialization {
 	@Mod.Instance

@@ -34,12 +34,12 @@ public class KeyCodes {
 		'i',
 		'o',
 		'p',
-		
+
 		'[',
 		']',
 		special_offset+28, //KEY_RETURN
 		'\0', //KEY_LCONTROL, handle seperately?
-		
+
 		'a',
 		's',
 		'd',
@@ -55,7 +55,7 @@ public class KeyCodes {
 		'`',
 		'\0', //KEY_LSHIFT, handle seperately?
 		'\\',
-		
+
 		'z',
 		'x',
 		'c',
@@ -63,7 +63,7 @@ public class KeyCodes {
 		'b',
 		'n',
 		'm',
-		
+
 		',',
 		'.',
 		'/',
@@ -97,14 +97,14 @@ public class KeyCodes {
 		'3', //unix_keys.KEY_NUMPAD3,
 		'0', //unix_keys.KEY_NUMPAD0,
 		'.', //unix_keys.KEY_DECIMAL,
-		
+
 		'\0',
 		'\0',
 		'\0',
-		
+
 		'\0', //unix_keys.KEY_F11,
 		'\0', //unix_keys.KEY_F12,
-		
+
 		'\0',
 		'\0',
 		'\0',
@@ -116,14 +116,14 @@ public class KeyCodes {
 		'\0',
 		'\0',
 		'\0',
-		
+
 		'\0', //unix_keys.KEY_F13,
 		'\0', //unix_keys.KEY_F14,
 		'\0', //unix_keys.KEY_F15,
 		'\0', //unix_keys.KEY_F16,
 		'\0', //unix_keys.KEY_F17,
 		'\0', //unix_keys.KEY_F18,
-		
+
 		'\0',
 		'\0',
 		'\0',

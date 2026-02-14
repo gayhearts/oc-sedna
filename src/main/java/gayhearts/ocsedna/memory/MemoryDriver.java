@@ -52,7 +52,7 @@ public class MemoryDriver extends DriverItem implements Memory {
 	public String slot(ItemStack stack){
 		return Slot.Memory();
 	}
-	
+
 	@Override
 	public double amount(ItemStack stack){
 		System.out.println("amount");
@@ -60,7 +60,7 @@ public class MemoryDriver extends DriverItem implements Memory {
 		// E.G. `return 1000` results in 1024000.
 		return this.size;
 	}
-	
+
 	@Override
 	public int tier(ItemStack stack) {
 		// One higher than OpenComputers EEPROM.

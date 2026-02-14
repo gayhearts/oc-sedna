@@ -43,7 +43,7 @@ public class MemoryInit {
 		GameRegistry.registerItem(mem, name);
 		GameRegistry.registerCustomItemStack(name, mem_stack);
 		OreDictionary.registerOre("ocsedna:" + name, mem);
-		
+
 		return mem_stack;
 	}
 }

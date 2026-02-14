@@ -160,7 +160,7 @@ public class OpenComputersGPU {
 
 								return;
 							}
-						// CSI/ANSI escape sequence.
+							// CSI/ANSI escape sequence.
 						case C1_MODE_CSI:
 							CSI.Interpret(this, character);
 
@@ -172,7 +172,7 @@ public class OpenComputersGPU {
 							return;
 					}
 
-				// No C0 mode.
+					// No C0 mode.
 				case '\0':
 					if( HandleChar(character) != true ) {
 						return;

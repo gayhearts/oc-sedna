@@ -6,26 +6,26 @@ import java.util.HashMap;
 public abstract class ObjectList {
 	private HashMap<String, Object> items = new HashMap<String, Object>();
 	private HashMap<Long, String>   locks = new HashMap<Long, String>();
-	
+
 	private Class<?> object_class;
-	
+
 	public ObjectList( Class<?> object_class ){
 		this.object_class = object_class;
 	}
-	
+
 	public Long GetLock( String type ){		
 		SecureRandom random = new SecureRandom();
-		
+
 		if( locks.containsValue(type) == true ){
 			// If any Locks are type.
 			return null;
 		} else {
 			Long new_lock = null;
-			
+
 			// Try for a lock 10 times.
 			for( int I=0; I < 10; I++ ){
 				Long tmp_lock = random.nextLong();
-				
+
 				if( locks.containsKey(new_lock) == true ){
 					continue;
 				} else{
@@ -43,7 +43,7 @@ public abstract class ObjectList {
 			}
 		}
 	}
-	
+
 	protected boolean CheckLock( Long lock, String type ){
 		if( locks.containsKey(lock) && locks.get(lock) == type ){
 			return true;
@@ -68,7 +68,7 @@ public abstract class ObjectList {
 			return false;
 		}
 	}
-	
+
 	public boolean HasItems(){
 		return ! items.isEmpty();
 	}

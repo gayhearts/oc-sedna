@@ -51,6 +51,7 @@ plugins {
 	id("com.gradleup.shadow") version "9.3.0"
 	id("io.freefair.compress.trees") version "9.2.0"
 	id("java")
+	id("pmd")
 }
 
 var group = extra["modGroup"]
@@ -59,6 +60,27 @@ java.toolchain{
 	languageVersion.set(JavaLanguageVersion.of(25))
 }
 
+configure<PmdExtension> {
+    // toolVersion = "7.0.0-rc4"
+    isIgnoreFailures = false
+    toolVersion = "7.21.0"
+    sourceSets = setOf(project.sourceSets.getByName("main"))
+    ruleSetFiles = files(
+		"pmd.xml"
+	)
+}
+
+tasks.withType<Pmd> {
+    reports {
+	xml.required.set(true)
+	html.required.set(true)
+    }
+}
+
+tasks.named("pmdTest") {
+    enabled = false
+}
+ 
 repositories {
 	maven("https://maven.minecraftforge.net/")
 	maven("https://cursemaven.com")

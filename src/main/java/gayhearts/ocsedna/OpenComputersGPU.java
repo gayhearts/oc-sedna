@@ -1,12 +1,9 @@
 package gayhearts.ocsedna;
 
-import gayhearts.ocsedna.SednaVM;
 import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.internal.TextBuffer;
 import li.cil.oc.api.machine.Signal;
-
-import java.lang.StringBuilder;
 
 public class OpenComputersGPU {
 	Machine machine;
@@ -40,7 +37,7 @@ public class OpenComputersGPU {
 		try {
 			this.machine = machine;
 		} catch (Throwable thrown) {
-			System.out.printf( "%s\n", thrown.toString() );
+			//System.out.printf( "%s\n", thrown.toString() );
 		}
 
 		Object[] gpu_size;
@@ -49,7 +46,7 @@ public class OpenComputersGPU {
 			gpu_size = machine.invoke(this.address, "getResolution",
 					new Object[]{});
 		} catch (Throwable t) {
-			System.out.printf( "%s\n", t.toString() );
+			//System.out.printf( "%s\n", t.toString() );
 
 			return;
 		}
@@ -95,7 +92,7 @@ public class OpenComputersGPU {
 		try { 
 			this.text_buffer.rawSetText(0, 0, this.text_buffer_swap);
 		} catch (Throwable t) {
-			System.out.printf( "Scroll: %s\n", t.toString() );
+			//System.out.printf( "Scroll: %s\n", t.toString() );
 		}
 
 	}
@@ -111,7 +108,7 @@ public class OpenComputersGPU {
 
 			this.text_buffer.fill(0, 0, this.width, this.height, 32);
 		} catch (Throwable t) {
-			System.out.printf( "Clear failed: %s\n", t.toString() );
+			//System.out.printf( "Clear failed: %s\n", t.toString() );
 		}
 	}
 
@@ -131,7 +128,7 @@ public class OpenComputersGPU {
 					this.text_buffer_swap[this.cursor.y][this.cursor.x] = character;
 					this.text_buffer.set(this.cursor.x, this.cursor.y, String.valueOf(character), false);
 				} catch (Throwable t) {
-					System.out.printf( "WriteChar failed: %s\n", t.toString() );
+					//System.out.printf( "WriteChar failed: %s\n", t.toString() );
 					return false;
 				}
 		}
@@ -215,7 +212,7 @@ public class OpenComputersGPU {
 					}
 				}
 			} catch (Throwable thrown) {
-				System.out.printf("GetInput: %s\n", thrown.toString());
+				//System.out.printf("GetInput: %s\n", thrown.toString());
 			}
 		}	 
 

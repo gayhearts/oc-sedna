@@ -5,8 +5,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 import net.minecraft.item.Item;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 public class MemoryItem extends Item {
 	private final String name;
@@ -31,6 +29,7 @@ public class MemoryItem extends Item {
 		}
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister par1IconRegister)
 	{

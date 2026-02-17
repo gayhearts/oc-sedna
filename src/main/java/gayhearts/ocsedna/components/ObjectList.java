@@ -1,10 +1,10 @@
 package gayhearts.ocsedna.components;
 
-import java.security.SecureRandom;
-import java.util.HashMap;
+//import java.security.SecureRandom;
+//import java.util.HashMap;
 
 public abstract class ObjectList {
-	private HashMap<String, Object> items = new HashMap<String, Object>();
+	/*	private HashMap<String, Object> items = new HashMap<String, Object>();
 	private HashMap<Long, String>   locks = new HashMap<Long, String>();
 
 	private Class<?> object_class;
@@ -71,5 +71,5 @@ public abstract class ObjectList {
 
 	public boolean HasItems(){
 		return ! items.isEmpty();
-	}
+		}*/
 }

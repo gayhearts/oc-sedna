@@ -12,14 +12,14 @@ public class ControlSequenceIntroducer {
 	byte     final_byte        = '\0';
 
 	public void Clear(OpenComputersGPU gpu) {
-		for( byte I=parameter_pos; I > 0; I-- ){
-			parameter[I] = (byte)0x00;
+		for( byte i=parameter_pos; i > 0; i-- ){
+			parameter[i] = (byte)0x00;
 			parameter_pos--;
 		}
 		parameter_lock = false;
 
-		for( byte I=intermediate_pos; I > 0; I-- ){
-			intermediate[I] = (byte)0x00;
+		for( byte i=intermediate_pos; i > 0; i-- ){
+			intermediate[i] = (byte)0x00;
 			intermediate_pos--;
 		}
 		intermediate_lock = false;
@@ -62,15 +62,12 @@ public class ControlSequenceIntroducer {
 
 			if( parameter_lock == false ){
 				parameter_lock = true;
-				return;
 
 			} else if( intermediate_lock == false ){
 				intermediate_lock = true;
-				return;
 
 			} else{
 				this.Clear(gpu);
-				return;
 			}
 		}
 	}

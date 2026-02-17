@@ -56,20 +56,32 @@ public class FlashMemoryItem extends Item {
 	}
 
 	@Override 
-	public String getItemStackDisplayName(ItemStack stack) {
-		if (stack.hasTagCompound()) {
-			NBTTagCompound tag = stack.getTagCompound();
-			if (tag.hasKey("oc:data")) {
-				NBTTagCompound data = tag.getCompoundTag("oc:data");
-				if (data.hasKey("oc:label")) {
-					return data.getString("oc:label");
-				}
-			}
+	public String getItemStackDisplayName( final ItemStack stack ){
+		String parent_name = super.getItemStackDisplayName( stack );
+
+		NBTTagCompound tag;
+		NBTTagCompound data;
+		
+		if( stack.hasTagCompound() ){
+			tag = stack.stackTagCompound;
+		} else{
+			return parent_name;
 		}
 
-		return super.getItemStackDisplayName(stack);
+		if( tag.hasKey("oc:data") ){
+			data = tag.getCompoundTag("oc:data");
+		} else{
+			return parent_name;
+		}
+
+		if( data.hasKey("oc:label") ){
+			return data.getString("oc:label");
+		} else{
+			return parent_name;
+		}
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister par1IconRegister)
 	{

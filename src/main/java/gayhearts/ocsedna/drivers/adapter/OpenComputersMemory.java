@@ -4,11 +4,11 @@ import li.cil.sedna.api.device.PhysicalMemory;
 import net.minecraft.item.ItemStack;
 
 public class OpenComputersMemory{
-	private li.cil.oc.api.driver.item.Memory driver;
+	private final li.cil.oc.api.driver.item.Memory driver;
 
-	private ItemStack      stack;
-	private Integer        size;
-	private PhysicalMemory device;
+	private final ItemStack      stack;
+	private final Integer        size;
+	private final PhysicalMemory device;
 
 	public OpenComputersMemory( li.cil.oc.api.driver.item.Memory driver, ItemStack stack ){
 		double tmp = driver.amount( stack );

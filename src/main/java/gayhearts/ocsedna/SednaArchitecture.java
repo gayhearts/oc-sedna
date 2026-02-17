@@ -8,21 +8,12 @@ import li.cil.oc.api.driver.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import li.cil.oc.api.machine.Architecture;
-import li.cil.oc.api.machine.Callback;
+//import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.ExecutionResult;
-import li.cil.oc.api.machine.LimitReachedException;
+//import li.cil.oc.api.machine.LimitReachedException;
 import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.machine.Signal;
-import li.cil.oc.api.network.Component;
-import li.cil.oc.api.network.Node;
-import li.cil.oc.api.network.Environment;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import java.util.Map;
-import java.lang.Thread;
 
 /** This is the class you implement; Architecture is from the OC API. */
 @Architecture.Name("Sedna")
@@ -36,8 +27,10 @@ public class SednaArchitecture implements Architecture {
 		this.machine = machine;
 	}
 
+	@Override
 	public boolean isInitialized() { return true; }
 
+	@Override
 	public boolean initialize() {
 		// Set up new VM here, and register all API callbacks you want to
 		// provide to it.
@@ -50,16 +43,18 @@ public class SednaArchitecture implements Architecture {
 		return true;
 	}
 
+	@Override
 	public void close() {
 		vm = null;
 	}
 
+	@Override
 	public boolean recomputeMemory(Iterable<ItemStack> components) {
 		//li.cil.oc.api.machine.MachineHost.internalComponents()
 
-		System.out.println("recomputeMemory");
+		//System.out.println("recomputeMemory");
 		for( ItemStack stack: components ){
-			System.out.println("found: " + stack.toString());
+			//System.out.println("found: " + stack.toString());
 
 			Item   device  = Driver.driverFor(stack);
 			String address = null;
@@ -80,18 +75,19 @@ public class SednaArchitecture implements Architecture {
 				}
 
 				Memory mem = (Memory) device;
-				System.out.printf("Memory of size: %s", mem.amount(stack));
+				//System.out.printf("Memory of size: %s", mem.amount(stack));
 			
 				if( address != null ){
-					System.out.printf(", address: %s(%d)\n", address, machine.host().componentSlot(address));
+					//System.out.printf(", address: %s(%d)\n", address, machine.host().componentSlot(address));
 				} else{
-					System.out.printf("\n");
+					//System.out.printf("\n");
 				}
 			}
 		}
 		return true;
 	}
 
+	@Override
 	public ExecutionResult runThreaded(boolean isSynchronizedReturn) {
 		// Perform stepping in here. Usually you'll want to resume the VM
 		// by passing it the next signal from the queue, but you may decide
@@ -138,6 +134,7 @@ public class SednaArchitecture implements Architecture {
 		}
 	}
 
+	@Override
 	public void runSynchronized() {
 		// Synchronized calls are run from the MC server thread, making it
 		// easier for callbacks to interact with the world (because sync is
@@ -151,16 +148,28 @@ public class SednaArchitecture implements Architecture {
 		// assume the state info is kept inside the VM, and the next resume
 		// makes it perform the *actual* call. For some pseudo-code handling
 		// this in the VM, see below.
-		vm.run(null);
+		//vm.run(null);
 	}
 
-	public void onConnect() {}
+	@Override
+	public void onConnect(){
+		// TODO: Currently unimplemented.
+	}
 
 	// Use this to load the VM state, if it can be persisted.
-	public void load(NBTTagCompound nbt) {}
+	@Override
+	public void load( NBTTagCompound nbt ){
+		// TODO: Currently unimplemented.
+	}
 
 	// Use this to save the VM state, if it can be persisted.
-	public void save(NBTTagCompound nbt) {}
+	@Override
+	public void save( NBTTagCompound nbt ){
+		// TODO: Currently unimplemented.
+	}
 
-	public void onSignal() {}
+	@Override
+	public void onSignal(){
+		// TODO: Currently unimplemented.
+	}
 }

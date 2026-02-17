@@ -1,6 +1,5 @@
 package gayhearts.ocsedna;
 
-import li.cil.sedna.*;
 import li.cil.sedna.Sedna;
 import li.cil.sedna.api.Sizes;
 import li.cil.sedna.api.device.BlockDevice;
@@ -12,17 +11,18 @@ import li.cil.sedna.device.rtc.GoldfishRTC;
 import li.cil.sedna.device.rtc.SystemTimeRealTimeCounter;
 import li.cil.sedna.device.serial.UART16550A;
 import li.cil.sedna.device.virtio.VirtIOBlockDevice;
-import li.cil.sedna.device.virtio.VirtIOFileSystemDevice;
-import li.cil.sedna.fs.HostFileSystem;
+//import li.cil.sedna.device.virtio.VirtIOFileSystemDevice;
+//import li.cil.sedna.fs.HostFileSystem;
 import li.cil.sedna.riscv.R5Board;
-import li.cil.sedna.riscv.R5CPU;
+//import li.cil.sedna.riscv.R5CPU;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 
 // OpenComputers
 import li.cil.oc.api.machine.Machine;
-
-import java.io.*;
-import java.util.Arrays;
-import java.util.List;
 
 public class SednaVMRunner {
 	public static int VM_MEMORY_MEGABYTES = 32;
@@ -55,12 +55,12 @@ public class SednaVMRunner {
 				int value;
 				while ((value = uart.read()) != -1) {
 					this.gpu.WriteChar((char) value);
-					System.out.print((char) value);
+					//System.out.print((char) value);
 				}
 
 				int user_input = gpu.GetInput();
 				if( user_input != '\0' ){
-					//System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
+					////System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
 
 					switch (KeyCodes.lwjgl_keys[user_input]) {
 						case KeyCodes.special_offset+28:
@@ -178,7 +178,7 @@ public class SednaVMRunner {
 				return new ByteArrayInputStream(null);
 			}
 		} catch (Throwable thrown) {
-			System.out.println(thrown.toString());
+			//System.out.println(thrown.toString());
 		}
 
 

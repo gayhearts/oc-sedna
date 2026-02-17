@@ -1,30 +1,16 @@
 package gayhearts.ocsedna.memory;
 
-import li.cil.oc.Constants;
-import li.cil.oc.api.driver.EnvironmentProvider;
 import li.cil.oc.api.network.EnvironmentHost;
-import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.ManagedEnvironment;
 import li.cil.oc.common.Slot;
-import li.cil.oc.common.Tier;
 import net.minecraft.item.ItemStack;
-import li.cil.oc.api.driver.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import li.cil.oc.api.Driver;
 import li.cil.oc.api.prefab.DriverItem;
-import li.cil.oc.api.network.Visibility;
-import li.cil.oc.api.Network;
-import li.cil.oc.api.Items;
-import li.cil.oc.api.detail.ItemInfo;
 
-import li.cil.oc.integration.opencomputers.DriverMemory;
+import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
+
 //import li.cil.oc.common.item.Memory;
 import li.cil.oc.api.driver.item.Memory;
-
-import gayhearts.ocsedna.SednaInitialization;
-import gayhearts.ocsedna.firmware.FlashMemoryBase;
-import gayhearts.ocsedna.firmware.FlashMemoryItem;
-
 
 public class MemoryDriver extends DriverItem implements Memory {
 	// size - Size in Kibibytes.
@@ -35,7 +21,17 @@ public class MemoryDriver extends DriverItem implements Memory {
 	public MemoryDriver(int size, String name) {
 		this.size = size;
 		this.name = name;
-		super(MemoryInit.Setup(name));
+
+		// Create data.
+		MemoryItem memory = new MemoryItem(name);
+		ItemStack  stack  = new ItemStack(memory, 1);
+
+		// Register bare flash.
+		GameRegistry.registerItem(memory, name);
+		GameRegistry.registerCustomItemStack(name, stack);
+		OreDictionary.registerOre("ocsedna:" + name, memory);
+
+		super(stack);
 	}
 
 	@Override
@@ -43,8 +39,7 @@ public class MemoryDriver extends DriverItem implements Memory {
 		if (host.world()  != null && host.world().isRemote) {
 			return null;
 		} else {
-			MemoryBase mem = new MemoryBase(host, 1);
-			return mem;
+			return new MemoryBase(host, 1);
 		}
 	}
 
@@ -55,7 +50,7 @@ public class MemoryDriver extends DriverItem implements Memory {
 
 	@Override
 	public double amount(ItemStack stack){
-		System.out.println("amount");
+		//System.out.println("amount");
 		// Amount seems to be in kibibytes.
 		// E.G. `return 1000` results in 1024000.
 		return this.size;

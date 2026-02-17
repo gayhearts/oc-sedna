@@ -1,8 +1,5 @@
 package gayhearts.ocsedna;
 
-import java.util.Map;
-import static java.util.Map.entry;
-
 public class KeyCodes {
 	public final static char   special_offset = 256;
 	public final static char[] lwjgl_keys = {

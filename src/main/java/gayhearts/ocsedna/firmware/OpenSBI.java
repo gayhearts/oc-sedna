@@ -1,37 +1,25 @@
 package gayhearts.ocsedna.firmware;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
 
-public class OpenSBI {
+public final class OpenSBI {
+	private OpenSBI(){}
+	
 	private static byte[] GetFile(String filename) {
-		try {
-			InputStream in_stream = OpenSBI.class.getResourceAsStream(filename);
-			ByteArrayOutputStream out_stream = new ByteArrayOutputStream();
-
-			if( in_stream != null && out_stream != null ) {
-				int tmp = 0;
-
-				// Read until EOF.
-				while(tmp != -1) {
-					tmp = in_stream.read();
-					out_stream.write(tmp);
-				}
-
-				if( out_stream != null ) {
-					return out_stream.toByteArray();
-				} else {
-					return new byte[] {};
-				}
-			} else {
-				System.out.printf("Error loading firmware. Got null.\n");
+		try( InputStream in_stream = OpenSBI.class.getResourceAsStream(filename) ){
+			try( ByteArrayOutputStream out_stream = new ByteArrayOutputStream() ){
+				in_stream.transferTo( out_stream );
+				
+				return out_stream.toByteArray();
+				//System.out.printf("Error loading firmware. Got null.\n");
+			} catch( IOException exception ){
+				return new byte[] {};
 			}
-		} catch (Throwable thrown) {
-			System.out.println(thrown.toString());
+		} catch( IOException exception ){
+			return new byte[] {};
 		}
-
-		return new byte[] {};
 	}
 
 	public static byte[] GetDynamicFirmware() {

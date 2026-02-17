@@ -3,11 +3,10 @@ package gayhearts.ocsedna;
 import gayhearts.ocsedna.OpenComputersGPU;
 
 import li.cil.oc.api.machine.Machine;
-import li.cil.oc.api.machine.Signal;
-import li.cil.oc.api.prefab.AbstractValue;
+//import li.cil.oc.api.machine.Signal;
+//import li.cil.oc.api.prefab.AbstractValue;
 
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+//import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 public class SednaVM {
@@ -52,14 +51,14 @@ public class SednaVM {
 					break;
 			}
 
-			System.out.printf("Found \"%s\": \"%s\".\n", value, key);
+			//System.out.printf("Found \"%s\": \"%s\".\n", value, key);
 		}
 
 		if(screen_address != null && gpu.address != null) {
 			try {
 				machine.invoke(gpu.address, "bind", new Object[]{screen_address});
 			} catch (Throwable t) {
-				System.out.printf( "%s\n", t.toString() );
+				//System.out.printf( "%s\n", t.toString() );
 			}
 		}
 
@@ -75,10 +74,10 @@ public class SednaVM {
 				this.sedna_vm.eeprom_address = this.eeprom_address;
 				this.sedna_vm.SednaVMRunner();
 			} catch (Throwable t) {
-				System.out.printf( "%s\n", t.toString() );
+				//System.out.printf( "%s\n", t.toString() );
 			}
 		} else {
-			System.out.printf( "gpu.address is null.\n" );
+			//System.out.printf( "gpu.address is null.\n" );
 		}
 
 		return;

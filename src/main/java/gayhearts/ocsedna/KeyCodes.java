@@ -2,6 +2,21 @@ package gayhearts.ocsedna;
 
 public class KeyCodes {
 	public final static char   special_offset = 256;
+
+	public final static class  ANSI_INPUT{
+		char[] LEFT = { 0x1b, '[', 'D' };
+	}
+
+
+	/*
+	 *   Keys that require unique handling.
+	 */
+	final static char SPECIAL_RETURN = special_offset + 28;
+	final static char SPECIAL_UP     = special_offset + 200;
+	final static char SPECIAL_LEFT   = special_offset + 203;
+	final static char SPECIAL_RIGHT  = special_offset + 205;
+	final static char SPECIAL_DOWN   = special_offset + 208;
+
 	public final static char[] lwjgl_keys = {
 		'\0',
 		0x1B, // ESC

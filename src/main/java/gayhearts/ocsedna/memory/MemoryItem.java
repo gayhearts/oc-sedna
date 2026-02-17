@@ -31,8 +31,8 @@ public class MemoryItem extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister par1IconRegister)
+	public void registerIcons(IIconRegister Icon_Register)
 	{
-		this.itemIcon = par1IconRegister.registerIcon("ocsedna:" + this.name);
+		this.itemIcon = Icon_Register.registerIcon("ocsedna:" + this.name);
 	}
 }

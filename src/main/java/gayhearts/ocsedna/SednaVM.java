@@ -1,6 +1,6 @@
 package gayhearts.ocsedna;
 
-import gayhearts.ocsedna.OpenComputersGPU;
+import gayhearts.ocsedna.api.API;
 
 import li.cil.oc.api.machine.Machine;
 //import li.cil.oc.api.machine.Signal;
@@ -20,6 +20,10 @@ public class SednaVM {
 	OpenComputersGPU gpu = new OpenComputersGPU();
 	SednaVMRunner sedna_vm = new SednaVMRunner();
 
+	public void CloseDevices(){
+		sedna_vm.CloseDevices();
+	}
+	
 	Object[] run(Object[] args) {
 		// Text string when needed.
 		//gpu.WriteString( "What's the plan, Stan? " );
@@ -33,22 +37,24 @@ public class SednaVM {
 			String value = m.get(key);
 
 			switch (value) {
-				case "computer":
-					this.computer_address = key;
-					break;
-				case "gpu":
-					this.gpu.address = key;
-					break;
-				case "screen":
-					this.gpu.screen_address = key;
-					this.screen_address = key;
-					break;
-				case "eeprom":
-					this.eeprom_address = key;
-					break;
-				case "keyboard":
-					this.gpu.keyboard_address = key;
-					break;
+			case "computer":
+				this.computer_address = key;
+				break;
+			case "gpu":
+				this.gpu.address = key;
+				break;
+			case "screen":
+				this.gpu.screen_address = key;
+				this.screen_address = key;
+				break;
+			case "eeprom":
+				this.eeprom_address = key;
+				break;
+			case "keyboard":
+				this.gpu.keyboard_address = key;
+				break;
+			default:
+				break;
 			}
 
 			//System.out.printf("Found \"%s\": \"%s\".\n", value, key);
@@ -57,8 +63,8 @@ public class SednaVM {
 		if(screen_address != null && gpu.address != null) {
 			try {
 				machine.invoke(gpu.address, "bind", new Object[]{screen_address});
-			} catch (Throwable t) {
-				//System.out.printf( "%s\n", t.toString() );
+			} catch( Exception exception ){
+				API.Logger.Info( exception.toString() );
 			}
 		}
 
@@ -73,13 +79,12 @@ public class SednaVM {
 				this.sedna_vm.machine = this.machine;
 				this.sedna_vm.eeprom_address = this.eeprom_address;
 				this.sedna_vm.SednaVMRunner();
-			} catch (Throwable t) {
-				//System.out.printf( "%s\n", t.toString() );
+			} catch( Exception exception ){
+				API.Logger.Info( exception.toString() );
 			}
-		} else {
-			//System.out.printf( "gpu.address is null.\n" );
+		} else{
+			// TODO: make use of FML printouts
+			API.Logger.Info( "gpu.address is null." );
 		}
-
-		return;
 	}
 }

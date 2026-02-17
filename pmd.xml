@@ -5,7 +5,7 @@
          xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
     <description>Quickstart configuration of PMD. Includes the rules that are most likely to apply everywhere.</description>
 
-    <!-- <rule ref="category/java/bestpractices.xml/AbstractClassWithoutAbstractMethod" /> -->
+    <rule ref="category/java/bestpractices.xml/AbstractClassWithoutAbstractMethod" />
     <!-- <rule ref="category/java/bestpractices.xml/AccessorClassGeneration" /> -->
     <!-- <rule ref="category/java/bestpractices.xml/AccessorMethodGeneration" /> -->
     <!-- <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly" /> -->
@@ -69,16 +69,20 @@
     <!-- NAMING CONVENTIONS -->
   <!-- <rule ref="category/java/codestyle.xml/ClassNamingConventions"/>-->
     <!--<rule ref="category/java/codestyle.xml/FieldNamingConventions" />-->
-    <rule ref="category/java/codestyle.xml/FormalParameterNamingConventions"/>
+  <rule ref="category/java/codestyle.xml/FormalParameterNamingConventions">
+    <properties>
+      <property name="methodParameterPattern" value="^[a-z]+(_[a-z]+)*|^[A-Z][a-z]+(_[A-Z][a-z]+)*"/>
+    </properties>
+  </rule>
     <rule ref="category/java/codestyle.xml/LambdaCanBeMethodReference"/>
     <!-- <rule ref="category/java/codestyle.xml/LinguisticNaming" /> -->
   <rule ref="category/java/codestyle.xml/LocalVariableNamingConventions">
     <properties>
-      <property name="localVarPattern" value="[a-z]+(_[a-z]+)*"/>
+      <property name="localVarPattern" value="[a-z]+(_[a-z]+)*|\b[A-Z]{1}\b"/>
       <property name="finalVarPattern" value="[a-z]+(_[a-z]+)*"/>
     </properties>
   </rule>
-    <!-- <rule ref="category/java/codestyle.xml/LongVariable" /> -->
+    <rule ref="category/java/codestyle.xml/LongVariable" />
   <!-- <rule ref="category/java/codestyle.xml/MethodNamingConventions">
     <properties>
       <property name="methodPattern" value="^[A-Z][a-z]+(?:[A-Z][a-z]+)*$" />
@@ -138,21 +142,21 @@
 
 
     <rule ref="category/java/design.xml/AbstractClassWithoutAnyMethod"/>
-    <!-- <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts" /> -->
-    <!-- <rule ref="category/java/design.xml/AvoidRethrowingException" /> -->
-    <!-- <rule ref="category/java/design.xml/AvoidThrowingNewInstanceOfSameException" /> -->
-    <!--<rule ref="category/java/design.xml/AvoidThrowingNullPointerException" />-->
-    <!-- <rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes" /> -->
-    <!-- <rule ref="category/java/design.xml/AvoidUncheckedExceptionsInSignatures" /> -->
+  <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts" />
+    <rule ref="category/java/design.xml/AvoidRethrowingException" />
+    <rule ref="category/java/design.xml/AvoidThrowingNewInstanceOfSameException" />
+  <rule ref="category/java/design.xml/AvoidThrowingNullPointerException" />
+    <rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes" />
+    <rule ref="category/java/design.xml/AvoidUncheckedExceptionsInSignatures" />
     <rule ref="category/java/design.xml/ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
-    <!-- <rule ref="category/java/design.xml/CognitiveComplexity" /> -->
-    <!-- <rule ref="category/java/design.xml/CollapsibleIfStatements"/>-->
+  <rule ref="category/java/design.xml/CognitiveComplexity" />
+  <rule ref="category/java/design.xml/CollapsibleIfStatements"/>
     <!-- <rule ref="category/java/design.xml/CouplingBetweenObjects" /> -->
     <!-- <rule ref="category/java/design.xml/CyclomaticComplexity" /> -->
     <!-- <rule ref="category/java/design.xml/DataClass" /> -->
     <rule ref="category/java/design.xml/DoNotExtendJavaLangError" />
     <!-- <rule ref="category/java/design.xml/ExceptionAsFlowControl" /> -->
-    <!-- <rule ref="category/java/design.xml/ExcessiveImports" /> -->
+    <rule ref="category/java/design.xml/ExcessiveImports" />
     <!-- <rule ref="category/java/design.xml/ExcessiveParameterList" /> -->
     <!-- <rule ref="category/java/design.xml/ExcessivePublicCount" /> -->
     <rule ref="category/java/design.xml/FinalFieldCouldBeStatic"/>
@@ -172,7 +176,13 @@
     <!--     </properties> -->
     <!-- </rule> -->
     <!-- <rule ref="category/java/design.xml/MutableStaticState" /> -->
-    <!-- <rule ref="category/java/design.xml/NcssCount" /> -->
+  <rule ref="category/java/design.xml/NcssCount">
+    <properties>
+        <property name="methodReportLevel" value="50" />
+        <property name="classReportLevel" value="500" />
+    </properties>
+  </rule>
+
     <!-- <rule ref="category/java/design.xml/NPathComplexity" /> -->
     <!-- <rule ref="category/java/design.xml/PublicMemberInNonPublicType" /> -->
     <!-- <rule ref="category/java/design.xml/SignatureDeclareThrowsException" /> -->

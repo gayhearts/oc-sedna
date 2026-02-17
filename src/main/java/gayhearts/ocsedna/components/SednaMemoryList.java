@@ -1,6 +1,6 @@
 package gayhearts.ocsedna.components;
 
-import gayhearts.ocsedna.drivers.adapter.OpenComputersMemory;
+//import gayhearts.ocsedna.drivers.adapter.OpenComputersMemory;
 //import li.cil.sedna.device.memory.Memory;
 //import java.util.HashMap;
 

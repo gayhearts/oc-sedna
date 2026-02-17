@@ -33,4 +33,12 @@ public class OpenComputersMemory{
 	public PhysicalMemory GetDevice(){
 		return device;
 	}
+
+	public ItemStack GetStack(){
+		return stack;
+	}
+
+	public li.cil.oc.api.driver.item.Memory GetDriver(){
+		return driver;
+	}
 }

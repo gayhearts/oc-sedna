@@ -5,6 +5,8 @@ import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.internal.TextBuffer;
 import li.cil.oc.api.machine.Signal;
 
+import gayhearts.ocsedna.api.API;
+
 public class OpenComputersGPU {
 	Machine machine;
 
@@ -34,19 +36,20 @@ public class OpenComputersGPU {
 	CursorClass cursor = new CursorClass();
 
 	public void initialize( Machine machine ) {
-		try {
-			this.machine = machine;
-		} catch (Throwable thrown) {
-			//System.out.printf( "%s\n", thrown.toString() );
-		}
+		// TODO NullPointerException ?
+		this.machine = machine;
+
+		//System.out.printf( "%s\n", thrown.toString() );
+
 
 		Object[] gpu_size;
 
 		try {
 			gpu_size = machine.invoke(this.address, "getResolution",
 					new Object[]{});
-		} catch (Throwable t) {
+		} catch( Exception exception ){
 			//System.out.printf( "%s\n", t.toString() );
+			API.Logger.Info( exception.toString() );
 
 			return;
 		}
@@ -75,8 +78,6 @@ public class OpenComputersGPU {
 		this.clear();
 
 		this.initialized = true;
-
-		return;
 	}
 
 	public void Scroll (int scroll_amount) {
@@ -91,7 +92,8 @@ public class OpenComputersGPU {
 
 		try { 
 			this.text_buffer.rawSetText(0, 0, this.text_buffer_swap);
-		} catch (Throwable t) {
+		} catch( Exception exception ){
+			API.Logger.Info( exception.toString() );
 			//System.out.printf( "Scroll: %s\n", t.toString() );
 		}
 
@@ -107,7 +109,8 @@ public class OpenComputersGPU {
 			}
 
 			this.text_buffer.fill(0, 0, this.width, this.height, 32);
-		} catch (Throwable t) {
+		} catch( Exception exception ){
+			API.Logger.Info( exception.toString() );
 			//System.out.printf( "Clear failed: %s\n", t.toString() );
 		}
 	}
@@ -127,7 +130,8 @@ public class OpenComputersGPU {
 				try {
 					this.text_buffer_swap[this.cursor.y][this.cursor.x] = character;
 					this.text_buffer.set(this.cursor.x, this.cursor.y, String.valueOf(character), false);
-				} catch (Throwable t) {
+				} catch( Exception exception ){
+					API.Logger.Info( exception.toString() );
 					//System.out.printf( "WriteChar failed: %s\n", t.toString() );
 					return false;
 				}
@@ -138,60 +142,60 @@ public class OpenComputersGPU {
 
 	private static final byte C1_MODE_CSI = (byte) 0x9B;
 
-	public void WriteChar (char character) {
-		if( this.initialized == true ) {
-			switch (this.c0_mode) {
-				case 0x1B: // ESC/^[
-					switch (this.c1_mode) {
-						// No C1 mode.
-						case '\0':
-							if( character >= 64 && character <= 95 ) {
-								// C1 codes seem to be simply: ascii value + 64.
-								this.c1_mode = (byte)(64 + character);
+	private void ProcessC1( char character ){
+		switch( this.c1_mode ){
+			case '\0': // No C2 mode.
+				if( character >= 64 && character <= 95 ) {
+					// C1 codes seem to be simply: ascii value + 64.
+					this.c1_mode = (byte)(64 + character);
+				} else {
+					// Invalid C1 sequence; clear mode.
+					this.c0_mode = '\0';
+					this.c1_mode = '\0';
+				}
 
-								return;
-							} else {
-								// Invalid C1 sequence; clear mode.
-								this.c0_mode = '\0';
-								this.c1_mode = '\0';
+				break;
+			case C1_MODE_CSI: // CSI/ANSI escape sequence.
+				CSI.Interpret(this, character);
 
-								return;
-							}
-							// CSI/ANSI escape sequence.
-						case C1_MODE_CSI:
-							CSI.Interpret(this, character);
+				break;
+			default: // Unimplemented C1 sequence; clear mode.
+				this.c0_mode = '\0';
+				this.c1_mode = '\0';
+		}
+	}
 
-							return;
-						default: // Unimplemented C1 sequence; clear mode.
-							this.c0_mode = '\0';
-							this.c1_mode = '\0';
-
-							return;
-					}
-
-					// No C0 mode.
-				case '\0':
-					if( HandleChar(character) != true ) {
-						return;
-					}
-			}
-
-			// Advance cursor by one.
-			//   If last position, scroll. 
-			if( this.cursor.y >= (this.height - 1) && this.cursor.x >= (this.width - 1) ) {
-				this.Scroll(1);
-			}	   
-
-			// Vertical.
-			if( this.cursor.y < (this.height - 1) && this.cursor.x >= (this.width - 1) ) {
-				this.cursor.y = ((this.cursor.y + 1) % this.height);
-			}
-
-			// Horizontal.
-			this.cursor.x = ((this.cursor.x + 1) % this.width);
-
+	public void WriteChar( char character ){
+		if( this.initialized == false ){
 			return;
-		}      
+		}
+
+		switch( this.c0_mode ){
+			case 0x1B: // ESC/^[
+				ProcessC1( character );
+				return;
+			case '\0':
+				if( HandleChar(character) != true ) {
+					return;
+				}
+				break;
+			default:
+				break;
+		}
+
+		// Advance cursor by one.
+		//   If last position, scroll. 
+		if( this.cursor.y >= (this.height - 1) && this.cursor.x >= (this.width - 1) ) {
+			this.Scroll(1);
+		}	   
+
+		// Vertical.
+		if( this.cursor.y < (this.height - 1) && this.cursor.x >= (this.width - 1) ) {
+			this.cursor.y = ((this.cursor.y + 1) % this.height);
+		}
+
+		// Horizontal.
+		this.cursor.x = ((this.cursor.x + 1) % this.width);
 	}
 
 	public void WriteString (String message) {
@@ -201,20 +205,26 @@ public class OpenComputersGPU {
 	}	
 
 	public int GetInput() {
-		if( this.keyboard_address != null ) {
-			try {
-				Signal signal = this.machine.popSignal();
+		if( this.keyboard_address == null ){
+			return 0;
+		}
+		
+		try {
+			Signal signal      = this.machine.popSignal();
+			String signal_name = null;
 
-				if( signal != null ){
-					String signal_name = signal.name();
-					if( signal_name == "key_down" ) {
-						return (int)signal.args()[2];
-					}
-				}
-			} catch (Throwable thrown) {
-				//System.out.printf("GetInput: %s\n", thrown.toString());
+			if( signal != null ){
+				signal_name = signal.name();
+			} else{
+				return 0;
 			}
-		}	 
+				
+			if( "key_down".equals(signal_name) ) {
+				return (int)signal.args()[2];
+			}
+		} catch( Exception exception ){
+			API.Logger.Info( exception.toString() );
+		}
 
 		return 0;
 	}

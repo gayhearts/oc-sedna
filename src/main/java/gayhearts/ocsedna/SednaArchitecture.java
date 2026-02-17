@@ -14,6 +14,8 @@ import li.cil.oc.api.machine.ExecutionResult;
 import li.cil.oc.api.machine.Machine;
 import li.cil.oc.api.machine.Signal;
 
+import gayhearts.ocsedna.api.API;
+
 
 /** This is the class you implement; Architecture is from the OC API. */
 @Architecture.Name("Sedna")
@@ -45,6 +47,7 @@ public class SednaArchitecture implements Architecture {
 
 	@Override
 	public void close() {
+		vm.CloseDevices();
 		vm = null;
 	}
 
@@ -54,47 +57,65 @@ public class SednaArchitecture implements Architecture {
 
 		//System.out.println("recomputeMemory");
 		for( ItemStack stack: components ){
-			//System.out.println("found: " + stack.toString());
+			API.Logger.InfoPrintf( "found component: %s\n", stack.toString() );
 
-			Item   device  = Driver.driverFor(stack);
+			/*
+			 *   Driver generic and specific for the found component.
+			 */
+			Item   driver  = Driver.driverFor(stack);
+			Memory memory  = null;
+
+			/*
+			 *   Variables utilized in Info printouts.
+			 */
 			String address = null;
+			String printout = null;
 
-			if( device instanceof Memory ){
-				NBTTagCompound tag = device.dataTag(stack);
+			/*
+			 *   NBT Tags held for data retrieval.
+			 */
+			NBTTagCompound tag  = null;
+			NBTTagCompound node = null;
 
-				if( tag != null ){
-					NBTTagCompound node = tag.getCompoundTag("node");
+			if( driver instanceof Memory ){
+				memory = (Memory) driver;
+				tag    = driver.dataTag( stack );
+			} else{
+				continue;
+			}
 
-					if( node != null ){
-						address = node.getString("address");
-					} else{
-						continue;
-					}
-				} else{
-					continue;
-				}
+			if( tag != null ){
+				node = tag.getCompoundTag("node");
+			} else{
+				continue;
+			}
 
-				Memory mem = (Memory) device;
-				//System.out.printf("Memory of size: %s", mem.amount(stack));
+			if( node != null ){
+				address = node.getString("address");
+			} else{
+				continue;
+			}
+
+			printout = "Memory of size: " + memory.amount(stack);
 			
-				if( address != null ){
-					//System.out.printf(", address: %s(%d)\n", address, machine.host().componentSlot(address));
-				} else{
-					//System.out.printf("\n");
-				}
+			if( address != null ){
+				API.Logger.InfoPrintf("%s, address: %s(%d)\n", printout, address, machine.host().componentSlot(address));
+			} else{
+				API.Logger.InfoPrintf("%s\n", printout);
 			}
 		}
+		
 		return true;
 	}
 
 	@Override
-	public ExecutionResult runThreaded(boolean isSynchronizedReturn) {
+	public ExecutionResult runThreaded(boolean sync_return) {
 		// Perform stepping in here. Usually you'll want to resume the VM
 		// by passing it the next signal from the queue, but you may decide
 		// to allow your VM to poll for signals manually.
 		try { 
 			final Signal signal;
-			if (isSynchronizedReturn) {
+			if( sync_return ){
 				// Don't pull signals when we're coming back from a sync call,
 				// since we're in the middle of something else!
 				signal = null;
@@ -109,8 +130,6 @@ public class SednaArchitecture implements Architecture {
 			else {
 				result = vm.run(null);
 			}
-
-			Thread.sleep(100_000);
 
 			// You'll want to define some internal protocol by which to decide
 			// when to perform a synchronized call. Let's say we expect the VM
@@ -128,9 +147,8 @@ public class SednaArchitecture implements Architecture {
 			// The next call to runThreaded after that call will have the
 			// isSynchronizedReturn argument set to true.
 			return new ExecutionResult.SynchronizedCall();
-		}
-		catch (Throwable t) {
-			return new ExecutionResult.Error(t.toString());
+		} catch( Exception exception ){
+			return new ExecutionResult.Error( exception.toString() );
 		}
 	}
 

@@ -30,42 +30,73 @@ public class ControlSequenceIntroducer {
 		gpu.c1_mode = '\0';
 	}
 
-	public void Interpret(OpenComputersGPU gpu, char value) {
+
+	final static class CSI_TYPE {
+		final static char PARAMETER    = 'P';
+		final static char INTERMEDIATE = 'I';
+		final static char FINAL        = 'F';
+		final static char UNKNOWN      = 'U';
+	}
+
+	private char GetCSIType( char value ){
+		// Parameter byte range.
 		if( (value >= 0x30) && (value <= 0x3F) ){
-			if( parameter_pos < 64 ){
-				if( parameter_lock == false ){
-					parameter[parameter_pos] = (byte)value;
-					parameter_pos++;
-				} else {
-					parameter_lock = true;
-				}
+			return CSI_TYPE.PARAMETER;
+
+			// Intermediate byte range.
+		} else if( (value >= 0x20) && (value <= 0x2F) ){
+			return CSI_TYPE.INTERMEDIATE;
+
+			// Final byte range.
+		} else if( (value >= 0x40) && (value <= 0x7E) ){
+			return CSI_TYPE.FINAL;
+
+			// Unknown.
+		} else{
+			return CSI_TYPE.UNKNOWN;
+		}
+	}
+
+	public void Interpret(OpenComputersGPU gpu, char value) {
+		char csi_type = GetCSIType( value );
+
+		switch( csi_type ){
+		case CSI_TYPE.PARAMETER:
+			if( parameter_pos >= 64 ){
+				parameter_lock = true;
+			} else if( parameter_lock == false ){
+				parameter[parameter_pos] = (byte)value;
+				parameter_pos++;
 			}
-		} else if( (value >= 0x20) && (value <=0x2F) ){
-			if( intermediate_pos < 64 ){
-				if( intermediate_lock == false ){
-					intermediate[intermediate_pos] = (byte)value;
-					intermediate_pos++;
-				} else{
-					intermediate_lock = true;
-				}
+
+			break;
+		case CSI_TYPE.INTERMEDIATE:
+			if( intermediate_pos >= 64 ){
+				intermediate_lock = true;
+			} else if( intermediate_lock == false ){
+				intermediate[intermediate_pos] = (byte)value;
+				intermediate_pos++;
 			}
-		} else if( (value >= 0x40) && (value <=0x7E) ){
+			
+			break;
+		case CSI_TYPE.FINAL:
 			if( final_byte == '\0' ){
 				final_byte = (byte)value;
 
 				// Handle the Control Sequence.
 				this.Clear(gpu);
 			}
-		} else{
+
+			break;
+		default:
 			// In the event of undefined characters, attempt to advance.
 			//   If unable, Clear().
-
 			if( parameter_lock == false ){
 				parameter_lock = true;
-
+				
 			} else if( intermediate_lock == false ){
 				intermediate_lock = true;
-
+				
 			} else{
 				this.Clear(gpu);
 			}

@@ -4,6 +4,9 @@ package gayhearts.ocsedna;
 import gayhearts.ocsedna.firmware.FlashMemoryDriver;
 import gayhearts.ocsedna.memory.MemoryDriver;
 
+import gayhearts.ocsedna.api.API;
+import gayhearts.ocsedna.api.LoggerAPI;
+
 // OpenComputers
 import li.cil.oc.api.Machine;
 
@@ -23,9 +26,12 @@ public class SednaInitialization {
 	@Mod.Instance
 	public static SednaInitialization instance;
 
+	public Object logger;
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		Machine.add(SednaArchitecture.class);
+		API.Logger = new LoggerAPI( event.getModLog() );
 	}
 
 	@EventHandler

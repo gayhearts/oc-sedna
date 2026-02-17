@@ -1,5 +1,7 @@
 package gayhearts.ocsedna;
 
+import gayhearts.ocsedna.api.API;
+
 import li.cil.sedna.Sedna;
 import li.cil.sedna.api.Sizes;
 import li.cil.sedna.api.device.BlockDevice;
@@ -25,8 +27,8 @@ import java.io.IOException;
 import li.cil.oc.api.machine.Machine;
 
 public class SednaVMRunner {
-	public static int VM_MEMORY_MEGABYTES = 32;
-	public static int VM_MEMORY_BYTES = (VM_MEMORY_MEGABYTES * 1024 * 1024);
+	public static int MEMORY_MBYTES = 32;
+	public static int MEMORY_BYTES  = MEMORY_MBYTES * 1024 * 1024;
 
 	public static int VM_CPU_FREQUENCY = 25_000_000;
 
@@ -35,7 +37,7 @@ public class SednaVMRunner {
 	public OpenComputersGPU gpu;
 
 	public R5Board board = new R5Board();
-	public PhysicalMemory memory = Memory.create(VM_MEMORY_BYTES);
+	public PhysicalMemory memory = Memory.create(MEMORY_BYTES);
 	public GoldfishRTC rtc = new GoldfishRTC(SystemTimeRealTimeCounter.get());
 	public UART16550A uart = new UART16550A();
 
@@ -44,53 +46,22 @@ public class SednaVMRunner {
 	public void SednaVMStep() {
 		int remaining = 0;
 		if( board.isRunning() ) {
-			final int cyclesPerSecond = board.getCpu().getFrequency();
-			final int cyclesPerStep = 1_000;
+			final int cycles_per_second = board.getCpu().getFrequency();
+			final int cycles_per_step = 1_000;
 
-			remaining = cyclesPerSecond;
+			remaining = cycles_per_second;
 			while (remaining > 0) {
-				board.step(cyclesPerStep);
-				remaining -= cyclesPerStep;
+				board.step(cycles_per_step);
+				remaining -= cycles_per_step;
 
 				int value;
 				while ((value = uart.read()) != -1) {
 					this.gpu.WriteChar((char) value);
+					//API.Logger.InfoPrintf( "%c", (char) value );
 					//System.out.print((char) value);
 				}
 
-				int user_input = gpu.GetInput();
-				if( user_input != '\0' ){
-					////System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
-
-					switch (KeyCodes.lwjgl_keys[user_input]) {
-						case KeyCodes.special_offset+28:
-							uart.putByte((byte)'\n');
-							break;
-						case KeyCodes.special_offset+200: //up
-							uart.putByte((byte)0x1B);
-							uart.putByte((byte)'[');
-							uart.putByte((byte)'A');
-							break;
-						case KeyCodes.special_offset+203: //left
-							uart.putByte((byte)0x1B);
-							uart.putByte((byte)'[');
-							uart.putByte((byte)'D');
-							break;
-						case KeyCodes.special_offset+205: //right
-							uart.putByte((byte)0x1B);
-							uart.putByte((byte)'[');
-							uart.putByte((byte)'C');
-							break;
-						case KeyCodes.special_offset+208: //down
-							uart.putByte((byte)0x1B);
-							uart.putByte((byte)'[');
-							uart.putByte((byte)'B');
-							break;
-						default:
-							uart.putByte((byte)KeyCodes.lwjgl_keys[user_input]);
-					}
-				}
-
+				ProcessInput( gpu.GetInput() );
 
 				//while (br.ready() && builtinDevices.uart.canPutByte()) {
 				//	builtinDevices.uart.putByte((byte) br.read());
@@ -103,13 +74,54 @@ public class SednaVMRunner {
 						loadProgramFile(memory, images.kernel(), 0x200000);
 
 						board.initialize();
-					} catch (Throwable t) {
-						this.gpu.WriteString("%s\n" + t.toString());
+					} catch( Exception exception ){
+						this.gpu.WriteString( "%s\n" + exception.toString() );
 					}
 				}
 			}
 		}
 
+	}
+
+	// Keep these held in-class to close later.
+	private BlockDevice bootfs    = null;
+	private VirtIOBlockDevice vda = null;
+
+	private BlockDevice rootfs    = null;
+	private VirtIOBlockDevice vdb = null;
+
+	public void CloseDevices(){
+		try{
+			if( bootfs != null ){
+				bootfs.close();
+			}
+		} catch( IOException exception ){
+			API.Logger.Info( exception.toString() );
+		}
+
+		try{
+			if( vda != null ){
+				vda.close();
+			}
+		} catch( IOException exception ){
+			API.Logger.Info( exception.toString() );
+		}
+
+		try{
+			if( rootfs != null ){
+				rootfs.close();
+			}
+		} catch( IOException exception ){
+			API.Logger.Info( exception.toString() );
+		}
+
+		try{
+			if( vdb != null ){
+				vdb.close();
+			}
+		} catch( IOException exception ){
+			API.Logger.Info( exception.toString() );
+		}
 	}
 
 	public void SednaVMRunner() throws Exception {
@@ -124,13 +136,13 @@ public class SednaVMRunner {
 
 		// mount bootfs for first block device (vda)
 		//   can we add this to context?
-		final BlockDevice bootfs = ByteBufferBlockDevice.createFromStream(images.bootfs(), true);
-		final VirtIOBlockDevice vda = new VirtIOBlockDevice(board.getMemoryMap(), bootfs);
+		bootfs = ByteBufferBlockDevice.createFromStream(images.bootfs(), true);
+		vda = new VirtIOBlockDevice(board.getMemoryMap(), bootfs);
 		vda.getInterrupt().set(0x1, board.getInterruptController());
 		board.addDevice(vda);
 
-		final BlockDevice rootfs = ByteBufferBlockDevice.createFromStream(images.rootfs(), false);
-		final VirtIOBlockDevice vdb = new VirtIOBlockDevice(board.getMemoryMap(), rootfs);
+		rootfs = ByteBufferBlockDevice.createFromStream(images.rootfs(), false);
+		vdb = new VirtIOBlockDevice(board.getMemoryMap(), rootfs);
 		vdb.getInterrupt().set(0x2, board.getInterruptController());
 		board.addDevice(vdb);
 
@@ -157,14 +169,48 @@ public class SednaVMRunner {
 
 		try {
 			board.initialize();
-		} catch (Throwable t) {
-			this.gpu.WriteString(t.toString() + '\n');
+		} catch( Exception exception ){
+			this.gpu.WriteString( exception.toString() + '\n' );
 			return;
 		}
 
 		this.gpu.WriteString("board initialized\n");
 
 		board.setRunning(true);
+	}
+
+	private void ProcessInput( int input ){
+		if( input != '\0' ){
+			//System.out.printf("%d - %c\n", user_input, (char)KeyCodes.lwjgl_keys[user_input]);
+
+			switch( KeyCodes.lwjgl_keys[input] ){
+				case KeyCodes.SPECIAL_RETURN:
+					uart.putByte((byte)'\n');
+					break;
+				case KeyCodes.SPECIAL_UP:
+					uart.putByte((byte)0x1B);
+					uart.putByte((byte)'[');
+					uart.putByte((byte)'A');
+					break;
+				case KeyCodes.SPECIAL_LEFT: //left
+					uart.putByte((byte)0x1B);
+					uart.putByte((byte)'[');
+					uart.putByte((byte)'D');
+					break;
+				case KeyCodes.SPECIAL_RIGHT: //right
+					uart.putByte((byte)0x1B);
+					uart.putByte((byte)'[');
+					uart.putByte((byte)'C');
+					break;
+				case KeyCodes.SPECIAL_DOWN: //down
+					uart.putByte((byte)0x1B);
+					uart.putByte((byte)'[');
+					uart.putByte((byte)'B');
+					break;
+				default:
+					uart.putByte((byte)KeyCodes.lwjgl_keys[input]);
+			}
+		}
 	}
 
 	private static InputStream ReadFlash(Machine machine, String address) {
@@ -177,8 +223,8 @@ public class SednaVMRunner {
 			} else {
 				return new ByteArrayInputStream(null);
 			}
-		} catch (Throwable thrown) {
-			//System.out.println(thrown.toString());
+		} catch( Exception exception ){
+			API.Logger.Info( exception.toString() );
 		}
 
 

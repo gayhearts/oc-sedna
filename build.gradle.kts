@@ -12,6 +12,9 @@ import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.math.BigInteger
 
+// Log4j
+var log4j_version: String by extra
+
 // OpenComputersSedna info
 var modId: String by extra
 var modGroup: String by extra
@@ -52,6 +55,17 @@ plugins {
 	id("io.freefair.compress.trees") version "9.2.0"
 	id("java")
 	id("pmd")
+
+	// Check dependencies for vulnerabilities.
+	id("org.owasp.dependencycheck") version "12.2.0" apply false
+}
+
+allprojects {
+    apply(plugin = "org.owasp.dependencycheck")
+}
+
+configure<org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension> {
+    format = org.owasp.dependencycheck.reporting.ReportGenerator.Format.ALL.toString()
 }
 
 var group = extra["modGroup"]
@@ -111,6 +125,9 @@ dependencies {
 	implementation("li.cil.sedna:sedna-buildroot:${minux_version}")
 
 	implementation("org.tukaani:xz:1.11")
+
+	// For logging. ENSURE UP TO DATE.
+	implementation("org.apache.logging.log4j:log4j-api:${log4j_version}")
 
 	shadowImplementation("li.cil.ceres:ceres:${ceres_version}")
 	shadowImplementation("li.cil.sedna:sedna:${sedna_version}")

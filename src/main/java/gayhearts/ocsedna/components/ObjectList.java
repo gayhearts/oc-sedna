@@ -3,7 +3,7 @@ package gayhearts.ocsedna.components;
 //import java.security.SecureRandom;
 //import java.util.HashMap;
 
-public abstract class ObjectList {
+public class ObjectList {
 	/*	private HashMap<String, Object> items = new HashMap<String, Object>();
 	private HashMap<Long, String>   locks = new HashMap<Long, String>();
 

@@ -2,6 +2,9 @@ package gayhearts.ocsedna;
 
 import gayhearts.ocsedna.api.API;
 
+import gayhearts.ocsedna.drivers.minecraft.TotalWorldTimeRTC;
+import gayhearts.ocsedna.drivers.minecraft.WorldTimeRTC;
+
 import li.cil.sedna.Sedna;
 import li.cil.sedna.api.Sizes;
 import li.cil.sedna.api.device.BlockDevice;
@@ -38,8 +41,11 @@ public class SednaVMRunner {
 
 	public R5Board board = new R5Board();
 	public PhysicalMemory memory = Memory.create(MEMORY_BYTES);
-	public GoldfishRTC rtc = new GoldfishRTC(SystemTimeRealTimeCounter.get());
 	public UART16550A uart = new UART16550A();
+	
+	public GoldfishRTC rtc0 = new GoldfishRTC(SystemTimeRealTimeCounter.get());
+	public GoldfishRTC rtc1 = new GoldfishRTC(new TotalWorldTimeRTC());
+	public GoldfishRTC rtc2 = new GoldfishRTC(new WorldTimeRTC());
 
 	public Images images;
 
@@ -148,12 +154,16 @@ public class SednaVMRunner {
 
 		this.gpu.WriteString("drives added\n");
 
-		uart.getInterrupt().set(0xA, board.getInterruptController());
-		rtc.getInterrupt().set(0xB, board.getInterruptController());
+		uart.getInterrupt().set( 0xA, board.getInterruptController() );
+		rtc0.getInterrupt().set( 0xB, board.getInterruptController() );
+		rtc1.getInterrupt().set( 0xC, board.getInterruptController() );
+		rtc2.getInterrupt().set( 0xD, board.getInterruptController() );
 
 		board.addDevice(0x80000000L, memory);
 		board.addDevice(uart);
-		board.addDevice(rtc);
+		board.addDevice(rtc0);
+		board.addDevice(rtc1);
+		board.addDevice(rtc2);
 
 		board.getCpu().setFrequency(VM_CPU_FREQUENCY);
 		board.setBootArguments("root=/dev/vda rw");
